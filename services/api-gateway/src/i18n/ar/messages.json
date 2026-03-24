@@ -1,0 +1,49 @@
+{
+  "auth": {
+    "invalid_credentials": "بيانات الاعتماد غير صالحة",
+    "no_farm_access": "المستخدم لا يملك صلاحية الوصول لهذه المزرعة",
+    "workers_cannot_invite": "العمال لا يمكنهم دعوة أعضاء",
+    "workers_cannot_remove": "العمال لا يمكنهم إزالة أعضاء",
+    "refresh_token_missing": "رمز التحديث مفقود",
+    "refresh_token_invalid": "رمز التحديث غير صالح",
+    "refresh_token_expired": "رمز التحديث غير صالح أو منتهي الصلاحية",
+    "user_not_found": "المستخدم غير موجود",
+    "email_already_exists": "البريد الإلكتروني مسجل مسبقاً",
+    "current_password_incorrect": "كلمة المرور الحالية غير صحيحة",
+    "member_removed": "تمت إزالة العضو بنجاح"
+  },
+  "farm": {
+    "not_found": "المزرعة غير موجودة",
+    "unable_to_verify_access": "تعذر التحقق من صلاحية الوصول للمزرعة",
+    "no_access": "لا تملك صلاحية الوصول لهذه المزرعة",
+    "unable_to_verify_ownership": "تعذر التحقق من ملكية المزرعة",
+    "only_owners_can_update": "فقط مالك المزرعة يمكنه تحديث هذه المجموعة",
+    "unable_to_load": "تعذر تحميل المزارع حالياً",
+    "unable_to_load_owner": "تعذر تحميل مزارع المالك حالياً"
+  },
+  "task": {
+    "template_not_found": "قالب المهمة غير موجود",
+    "occurrence_not_found": "المهمة المجدولة غير موجودة"
+  },
+  "invitation": {
+    "not_found": "الدعوة غير موجودة",
+    "not_found_or_processed": "الدعوة غير موجودة أو تمت معالجتها مسبقاً",
+    "expired": "انتهت صلاحية الدعوة",
+    "can_only_reject_own": "يمكنك رفض دعوتك فقط",
+    "rejected": "تم رفض الدعوة بنجاح"
+  },
+  "production": {
+    "group_not_found": "المجموعة غير موجودة"
+  },
+  "stock": {
+    "material_not_found": "المادة غير موجودة",
+    "transaction_not_found": "المعاملة غير موجودة"
+  },
+  "report": {
+    "not_found": "التقرير غير موجود"
+  },
+  "general": {
+    "upstream_timeout": "انتهت مهلة الخدمة",
+    "internal_error": "خطأ في الخادم الداخلي"
+  }
+}

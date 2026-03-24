@@ -1,0 +1,49 @@
+{
+  "auth": {
+    "invalid_credentials": "Invalid credentials",
+    "no_farm_access": "User does not have access to this farm",
+    "workers_cannot_invite": "Workers cannot invite members",
+    "workers_cannot_remove": "Workers cannot remove members",
+    "refresh_token_missing": "Refresh token missing",
+    "refresh_token_invalid": "Invalid refresh token",
+    "refresh_token_expired": "Invalid or expired refresh token",
+    "user_not_found": "User not found",
+    "email_already_exists": "Email already exists",
+    "current_password_incorrect": "Current password incorrect",
+    "member_removed": "Member removed successfully"
+  },
+  "farm": {
+    "not_found": "Farm not found",
+    "unable_to_verify_access": "Unable to verify farm access",
+    "no_access": "You do not have access to this farm",
+    "unable_to_verify_ownership": "Unable to verify farm ownership",
+    "only_owners_can_update": "Only farm owners can update this group",
+    "unable_to_load": "Unable to load farms at the moment",
+    "unable_to_load_owner": "Unable to load owner farms at the moment"
+  },
+  "task": {
+    "template_not_found": "Template not found",
+    "occurrence_not_found": "Occurrence not found"
+  },
+  "invitation": {
+    "not_found": "Invitation not found",
+    "not_found_or_processed": "Invitation not found or already processed",
+    "expired": "Invitation expired",
+    "can_only_reject_own": "You can only reject your own invitation",
+    "rejected": "Invitation rejected successfully"
+  },
+  "production": {
+    "group_not_found": "Group not found"
+  },
+  "stock": {
+    "material_not_found": "Material not found",
+    "transaction_not_found": "Transaction not found"
+  },
+  "report": {
+    "not_found": "Report not found"
+  },
+  "general": {
+    "upstream_timeout": "Upstream service timeout",
+    "internal_error": "Internal server error"
+  }
+}
