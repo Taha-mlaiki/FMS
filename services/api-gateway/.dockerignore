@@ -1,0 +1,40 @@
+# ================================================================
+# .dockerignore — Files to EXCLUDE from Docker builds
+# ================================================================
+# When Docker runs "COPY . ." it copies EVERYTHING in the directory
+# into the container. This file tells Docker to SKIP certain files.
+#
+# WHY? node_modules is huge (100MB+). We don't want to copy it
+# into the container — we run "npm ci" inside the container instead
+# to get a clean Linux-compatible installation.
+# ================================================================
+
+# Don't copy node_modules — we install fresh inside the container
+node_modules
+
+# Don't copy the compiled output — we build fresh inside the container
+dist
+
+# Git files are not needed in the container
+.git
+.gitignore
+
+# Editor and IDE files
+.vscode
+.idea
+
+# Docker-related files (no need to include themselves)
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Test files — not needed in production
+test
+*.spec.ts
+coverage
+
+# Environment files — secrets should be passed as env vars, not baked in
+.env*.local
+
+# Misc
+README.md

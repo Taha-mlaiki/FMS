@@ -1,0 +1,177 @@
+# ================================================================
+# FMS Docker Compose — All Microservices + Databases
+# ================================================================
+
+services:
+  # ==============================================================
+  # API GATEWAY — Public-facing HTTP server (port 3001)
+  # ==============================================================
+  api-gateway:
+    build:
+      context: .
+      dockerfile: services/api-gateway/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - AUTH_GRPC_URL=auth-service:50051
+      - USER_GRPC_URL=user-service:50052
+      - TASK_GRPC_URL=task-service:50053
+      - PRODUCTION_GRPC_URL=production-service:50054
+      - STOCK_GRPC_URL=stock-service:50055
+      - REPORT_GRPC_URL=report-service:50056
+      - JWT_SECRET=${JWT_SECRET}
+      - PROTO_PATH=../../proto
+    depends_on:
+      - auth-service
+      - user-service
+      - task-service
+      - production-service
+      - stock-service
+      - report-service
+    restart: unless-stopped
+
+  # ==============================================================
+  # AUTH SERVICE — gRPC (port 50051)
+  # ==============================================================
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=auth_service_db
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # ==============================================================
+  # USER SERVICE — gRPC (port 50052)
+  # ==============================================================
+  user-service:
+    build:
+      context: .
+      dockerfile: services/user-service/Dockerfile
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=user_service_db
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # ==============================================================
+  # TASK SERVICE — gRPC (port 50053)
+  # ==============================================================
+  task-service:
+    build:
+      context: .
+      dockerfile: services/task-service/Dockerfile
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=task_service_db
+      - PRODUCTION_GRPC_URL=production-service:50054
+      - STOCK_GRPC_URL=stock-service:50055
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # ==============================================================
+  # PRODUCTION SERVICE — gRPC (port 50054)
+  # ==============================================================
+  production-service:
+    build:
+      context: .
+      dockerfile: services/production-service/Dockerfile
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=production_service_db
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # ==============================================================
+  # STOCK SERVICE — gRPC (port 50055)
+  # ==============================================================
+  stock-service:
+    build:
+      context: .
+      dockerfile: services/stock-service/Dockerfile
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=stock_service_db
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # ==============================================================
+  # REPORT SERVICE — gRPC (port 50056)
+  # ==============================================================
+  report-service:
+    build:
+      context: .
+      dockerfile: services/report-service/Dockerfile
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=report_service_db
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # ==============================================================
+  # POSTGRESQL — Single instance with multiple databases
+  # ==============================================================
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=auth_service_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==============================================================
+  # FRONTEND — Next.js (port 3000)
+  # ==============================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api-gateway:3001
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
