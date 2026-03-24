@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+dist/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+*.js.map
+*.d.ts
+
+# Docker
+postgres_data/
+
+# Next.js
+.next/
+
+# Misc
+*.log
+coverage/
+.gemini/

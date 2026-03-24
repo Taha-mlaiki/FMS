@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2021",
+    "sourceMap": true,
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "paths": {
+      "@shared/*": ["../../shared/*"],
+      "@nestjs/*": ["./node_modules/@nestjs/*"],
+      "typeorm": ["./node_modules/typeorm"],
+      "rxjs": ["./node_modules/rxjs"]
+    },
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"]
+}

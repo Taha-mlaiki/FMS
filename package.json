@@ -1,0 +1,16 @@
+{
+  "name": "fms-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "npm run lint --prefix services/api-gateway && npm run lint --prefix services/auth-service && npm run lint --prefix services/user-service && npm run lint --prefix services/task-service && npm run lint --prefix services/production-service && npm run lint --prefix services/stock-service && npm run lint --prefix services/report-service",
+    "format": "npm run format --prefix services/api-gateway && npm run format --prefix services/auth-service && npm run format --prefix services/user-service && npm run format --prefix services/task-service && npm run format --prefix services/production-service && npm run format --prefix services/stock-service && npm run format --prefix services/report-service",
+    "test": "npm test --prefix services/api-gateway && npm test --prefix services/auth-service && npm test --prefix services/user-service && npm test --prefix services/task-service && npm test --prefix services/production-service && npm test --prefix services/stock-service && npm test --prefix services/report-service"
+  },
+  "dependencies": {
+    "axios": "^1.13.6",
+    "csv-parse": "^6.1.0",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^17.3.1"
+  }
+}
