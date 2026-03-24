@@ -1,0 +1,242 @@
+syntax = "proto3";
+
+package stock;
+
+// ================================================================
+// Stock Service — gRPC Contract
+// ================================================================
+// Handles material management, transactions (purchase, consumption,
+// damage, adjustment), automatic stock updates, and low-stock alerts.
+// ================================================================
+
+service StockService {
+  // --- Material CRUD ---
+  rpc CreateMaterial (CreateMaterialRequest) returns (Material);
+  rpc GetMaterial (GetMaterialRequest) returns (Material);
+  rpc UpdateMaterial (UpdateMaterialRequest) returns (Material);
+  rpc DeleteMaterial (DeleteMaterialRequest) returns (GenericResponse);
+  rpc ListMaterials (ListMaterialsRequest) returns (ListMaterialsResponse);
+
+  // --- Transactions ---
+  rpc CreateTransaction (CreateTransactionRequest) returns (Transaction);
+  rpc UpdateTransaction (UpdateTransactionRequest) returns (Transaction);
+  rpc ListTransactions (ListTransactionsRequest) returns (ListTransactionsResponse);
+
+  // --- Auto-Decrement (called by Task Service) ---
+  rpc DecrementStock (DecrementStockRequest) returns (DecrementStockResponse);
+
+  // --- Alerts ---
+  rpc GetLowStockAlerts (GetLowStockAlertsRequest) returns (GetLowStockAlertsResponse);
+
+  // --- Analytics ---
+  rpc GetStockAnalytics (GetStockAnalyticsRequest) returns (StockAnalyticsResponse);
+
+  // --- Health ---
+  rpc HealthCheck (Empty) returns (HealthResponse);
+}
+
+// -------------------------------------------------------
+// Common Messages
+// -------------------------------------------------------
+message Empty {}
+
+message GenericResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message HealthResponse {
+  string status = 1;
+  string service = 2;
+}
+
+// -------------------------------------------------------
+// Material Messages
+// -------------------------------------------------------
+message CreateMaterialRequest {
+  string farm_id = 1;
+  string name = 2;
+  string category = 3;       // feed, vaccine, medicine, equipment, other
+  string unit = 4;           // kg, litre, piece, dose
+  double quantity = 5;
+  double min_threshold = 6;
+}
+
+message GetMaterialRequest {
+  string material_id = 1;
+  string farm_id = 2;
+}
+
+message UpdateMaterialRequest {
+  string material_id = 1;
+  string farm_id = 2;
+  string name = 3;
+  string category = 4;
+  string unit = 5;
+  double min_threshold = 6;
+  double quantity = 7;
+}
+
+message DeleteMaterialRequest {
+  string material_id = 1;
+  string farm_id = 2;
+}
+
+message ListMaterialsRequest {
+  string farm_id = 1;
+  string category = 2;
+  bool low_stock_only = 3;
+  int32 page = 4;
+  int32 limit = 5;
+}
+
+message ListMaterialsResponse {
+  repeated Material materials = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message Material {
+  string id = 1;
+  string name = 2;
+  string category = 3;
+  string unit = 4;
+  double quantity = 5;
+  double min_threshold = 6;
+  string farm_id = 7;
+  bool is_low_stock = 8;
+  string created_at = 10;
+  string updated_at = 11;
+}
+
+// -------------------------------------------------------
+// Transaction Messages
+// -------------------------------------------------------
+message CreateTransactionRequest {
+  string farm_id = 1;
+  string material_id = 2;
+  string type = 3;           // purchase, consumption, damage, adjustment
+  double quantity = 4;
+  double unit_cost = 5;
+  string notes = 6;
+  string created_by = 7;
+  string reference_id = 8;   // task_occurrence_id (optional)
+}
+
+message UpdateTransactionRequest {
+  string transaction_id = 1;
+  string type = 2;
+  double quantity = 3;
+  double unit_cost = 4;
+  string notes = 5;
+}
+
+message ListTransactionsRequest {
+  string farm_id = 1;
+  string material_id = 2;
+  string type = 3;
+  string start_date = 4;
+  string end_date = 5;
+  int32 page = 6;
+  int32 limit = 7;
+}
+
+message ListTransactionsResponse {
+  repeated Transaction transactions = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message Transaction {
+  string id = 1;
+  string farm_id = 2;
+  string material_id = 3;
+  string material_name = 4;
+  string type = 5;
+  double quantity = 6;
+  double unit_cost = 7;
+  double total_cost = 8;
+  double quantity_before = 9;
+  double quantity_after = 10;
+  string notes = 11;
+  string created_by = 12;
+  string reference_id = 13;
+  string created_at = 14;
+}
+
+// -------------------------------------------------------
+// Auto-Decrement Messages
+// -------------------------------------------------------
+message DecrementStockRequest {
+  string farm_id = 1;
+  string task_occurrence_id = 2;
+  repeated MaterialDecrement decrements = 3;
+}
+
+message MaterialDecrement {
+  string material_id = 1;
+  double quantity = 2;
+}
+
+message DecrementStockResponse {
+  bool success = 1;
+  string message = 2;
+  repeated MaterialUpdateResult results = 3;
+}
+
+message MaterialUpdateResult {
+  string material_id = 1;
+  double quantity_before = 2;
+  double quantity_after = 3;
+  bool is_low_stock = 4;
+}
+
+// -------------------------------------------------------
+// Alert Messages
+// -------------------------------------------------------
+message GetLowStockAlertsRequest {
+  string farm_id = 1;
+}
+
+message GetLowStockAlertsResponse {
+  repeated LowStockAlert alerts = 1;
+}
+
+message LowStockAlert {
+  string material_id = 1;
+  string material_name = 2;
+  string category = 3;
+  double current_quantity = 4;
+  double threshold = 5;
+  string unit = 6;
+  string severity = 7;       // warning, critical
+}
+
+// -------------------------------------------------------
+// Analytics Messages
+// -------------------------------------------------------
+message GetStockAnalyticsRequest {
+  string farm_id = 1;
+  string category = 2;
+  string start_date = 3;
+  string end_date = 4;
+}
+
+message StockAnalyticsResponse {
+  int32 total_materials = 2;
+  int32 low_stock_count = 3;
+  repeated CategoryBreakdown by_category = 4;
+  repeated ConsumptionTrend consumption_trends = 5;
+}
+
+message CategoryBreakdown {
+  string category = 1;
+  int32 count = 2;
+}
+
+message ConsumptionTrend {
+  string date = 1;
+  double total_consumed = 2;
+}

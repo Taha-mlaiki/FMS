@@ -1,0 +1,261 @@
+syntax = "proto3";
+
+package task;
+
+// ================================================================
+// Task Service — gRPC Contract
+// ================================================================
+// Handles task definitions, occurrences, dynamic categories,
+// recurrence (once/daily/weekly/monthly/yearly), and task
+// completion linked to reports.
+// ================================================================
+
+service TaskService {
+  // --- Task CRUD (Occurrences) ---
+  rpc CreateTask (CreateTaskRequest) returns (Task);
+  rpc GetTask (GetTaskRequest) returns (Task);
+  rpc UpdateTask (UpdateTaskRequest) returns (Task);
+  rpc DeleteTask (DeleteTaskRequest) returns (GenericResponse);
+  rpc ListTasks (ListTasksRequest) returns (ListTasksResponse);
+
+  // --- Task Template CRUD (Recurring patterns) ---
+  rpc CreateTaskTemplate (CreateTaskTemplateRequest) returns (TaskTemplate);
+  rpc GetTaskTemplate (GetTaskTemplateRequest) returns (TaskTemplate);
+  rpc UpdateTaskTemplate (UpdateTaskTemplateRequest) returns (TaskTemplate);
+  rpc DeleteTaskTemplate (DeleteTaskTemplateRequest) returns (GenericResponse);
+  rpc ListTaskTemplates (ListTaskTemplatesRequest) returns (ListTaskTemplatesResponse);
+
+  // --- Categories ---
+  rpc CreateCategory (CreateCategoryRequest) returns (TaskCategory);
+  rpc ListCategories (ListCategoriesRequest) returns (ListCategoriesResponse);
+  rpc DeleteCategory (DeleteCategoryRequest) returns (GenericResponse);
+
+  // --- Health ---
+  rpc HealthCheck (Empty) returns (HealthResponse);
+}
+
+// -------------------------------------------------------
+// Common Messages
+// -------------------------------------------------------
+message Empty {}
+
+message GenericResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message HealthResponse {
+  string status = 1;
+  string service = 2;
+}
+
+// -------------------------------------------------------
+// Category Messages
+// -------------------------------------------------------
+message CreateCategoryRequest {
+  string farm_id = 1;
+  string name = 2;
+  string color = 3;           // hex color for UI (optional)
+}
+
+message ListCategoriesRequest {
+  string farm_id = 1;
+}
+
+message ListCategoriesResponse {
+  repeated TaskCategory categories = 1;
+}
+
+message DeleteCategoryRequest {
+  string category_id = 1;
+  string farm_id = 2;
+}
+
+message TaskCategory {
+  string id = 1;
+  string farm_id = 2;
+  string name = 3;
+  string color = 4;
+  string created_at = 5;
+}
+
+// -------------------------------------------------------
+// Task Template Messages
+// -------------------------------------------------------
+message CreateTaskTemplateRequest {
+  string farm_id = 1;
+  string created_by = 2;
+  string title = 3;
+  string description = 4;
+  string category_id = 5;
+  string priority = 6;
+  string recurrence = 7;       // daily, weekly, monthly
+  string recurrence_config = 8; // JSON or specific format for days
+  string time_of_day = 9;
+  repeated string worker_ids = 10;
+  repeated string group_ids = 11;
+  repeated MaterialUsage materials = 12;
+  string start_date = 13;
+  string end_date = 14;
+}
+
+message UpdateTaskTemplateRequest {
+  string template_id = 1;
+  string farm_id = 2;
+  string title = 3;
+  string description = 4;
+  string category_id = 5;
+  string priority = 6;
+  string recurrence = 7;
+  string recurrence_config = 8;
+  string time_of_day = 9;
+  bool is_active = 10;
+  repeated string worker_ids = 11;
+  repeated string group_ids = 12;
+  repeated MaterialUsage materials = 13;
+  string start_date = 14;
+  string end_date = 15;
+}
+
+message GetTaskTemplateRequest {
+  string template_id = 1;
+  string farm_id = 2;
+}
+
+message ListTaskTemplatesRequest {
+  string farm_id = 1;
+  string category_id = 2;
+  string priority = 3;
+  bool is_active = 4;
+}
+
+message DeleteTaskTemplateRequest {
+  string template_id = 1;
+  string farm_id = 2;
+}
+
+message ListTaskTemplatesResponse {
+  repeated TaskTemplate templates = 1;
+}
+
+message TaskTemplate {
+  string id = 1;
+  string farm_id = 2;
+  string title = 3;
+  string description = 4;
+  string category_id = 5;
+  string category_name = 6;
+  string category_color = 7;
+  string priority = 8;
+  string recurrence = 9;
+  string recurrence_config = 10;
+  string time_of_day = 11;
+  bool is_active = 12;
+  repeated string worker_ids = 13;
+  repeated string group_ids = 14;
+  repeated MaterialUsage materials = 15;
+  string created_by = 16;
+  string created_at = 17;
+  string updated_at = 18;
+  string start_date = 19;
+  string end_date = 20;
+}
+
+// -------------------------------------------------------
+// Task Messages (Occurrences)
+// -------------------------------------------------------
+message CreateTaskRequest {
+  string farm_id = 1;
+  string created_by = 2;
+  string title = 3;
+  string description = 4;
+  string category_id = 5;
+  string priority = 6;
+  string scheduled_date = 7;   // YYYY-MM-DD
+  string time_of_day = 8;      // HH:mm
+  repeated string worker_ids = 9;
+  repeated string group_ids = 10;
+  repeated MaterialUsage materials = 11;
+  string template_id = 12;     // Optional parent template
+}
+
+message GetTaskRequest {
+  string task_id = 1;
+  string farm_id = 2;
+}
+
+message UpdateTaskRequest {
+  string task_id = 1;
+  string farm_id = 2;
+  string title = 3;
+  string description = 4;
+  string category_id = 5;
+  string priority = 6;
+  string scheduled_date = 7;
+  string time_of_day = 8;
+  string status = 9;           // todo, doing, done, skipped
+  repeated string worker_ids = 10;
+  repeated string group_ids = 11;
+  repeated MaterialUsage materials = 12;
+  string notes = 13;           // completion notes
+}
+
+message DeleteTaskRequest {
+  string task_id = 1;
+  string farm_id = 2;
+}
+
+message ListTasksRequest {
+  string farm_id = 1;
+  string category_id = 2;
+  string priority = 3;
+  string status = 4;           // todo, doing, done
+  int32 page = 5;
+  int32 limit = 6;
+  string worker_id = 7;
+  string group_id = 8;
+  string start_date = 9;      // YYYY-MM-DD filter range start
+  string end_date = 10;        // YYYY-MM-DD filter range end
+  string template_id = 11;    // Filter by parent template
+}
+
+message ListTasksResponse {
+  repeated Task tasks = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message Task {
+  string id = 1;
+  string farm_id = 2;
+  string template_id = 3;      // parent template
+  string title = 4;
+  string description = 5;
+  string category_id = 6;
+  string category_name = 7;
+  string category_color = 8;
+  string priority = 9;
+  string scheduled_date = 10;
+  string time_of_day = 11;
+  string status = 12;          // todo, doing, done, skipped
+  repeated string worker_ids = 13;
+  repeated string group_ids = 14;
+  repeated MaterialUsage materials = 15;
+  string created_by = 16;
+  string created_at = 17;
+  string updated_at = 18;
+  string completed_at = 19;
+  string completed_by = 20;
+  string notes = 21;
+}
+
+// -------------------------------------------------------
+// Materials
+// -------------------------------------------------------
+message MaterialUsage {
+  string material_id = 1;
+  string material_name = 2;
+  double quantity = 3;
+  string unit = 4;
+}

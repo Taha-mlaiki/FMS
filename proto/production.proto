@@ -1,0 +1,272 @@
+syntax = "proto3";
+
+package production;
+
+// ================================================================
+// Production Service — gRPC Contract
+// ================================================================
+// Handles group management, metric types, metric recording,
+// mortality tracking, and production analytics.
+// ================================================================
+
+service ProductionService {
+  // --- Group CRUD ---
+  rpc CreateGroup (CreateGroupRequest) returns (Group);
+  rpc GetGroup (GetGroupRequest) returns (Group);
+  rpc UpdateGroup (UpdateGroupRequest) returns (Group);
+  rpc DeleteGroup (DeleteGroupRequest) returns (GenericResponse);
+  rpc ListGroups (ListGroupsRequest) returns (ListGroupsResponse);
+
+  // --- Metric Types ---
+  rpc CreateMetricType (CreateMetricTypeRequest) returns (MetricType);
+  rpc UpdateMetricType (UpdateMetricTypeRequest) returns (MetricType);
+  rpc ListMetricTypes (ListMetricTypesRequest) returns (ListMetricTypesResponse);
+  rpc DeleteMetricType (DeleteMetricTypeRequest) returns (GenericResponse);
+
+  // --- Metric Recording ---
+  rpc RecordMetrics (RecordMetricsRequest) returns (RecordMetricsResponse);
+  rpc GetMetrics (GetMetricsRequest) returns (GetMetricsResponse);
+
+  // --- Mortality ---
+  rpc RecordMortality (RecordMortalityRequest) returns (MortalityRecord);
+  rpc GetMortalityHistory (GetMortalityHistoryRequest) returns (GetMortalityHistoryResponse);
+
+  // --- Analytics ---
+  rpc GetProductionAnalytics (GetAnalyticsRequest) returns (AnalyticsResponse);
+
+  // --- Health ---
+  rpc HealthCheck (Empty) returns (HealthResponse);
+}
+
+// -------------------------------------------------------
+// Common Messages
+// -------------------------------------------------------
+message Empty {}
+
+message GenericResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message HealthResponse {
+  string status = 1;
+  string service = 2;
+}
+
+// -------------------------------------------------------
+// Group Messages
+// -------------------------------------------------------
+message CreateGroupRequest {
+  string farm_id = 1;
+  string name = 2;
+  string type = 3;           // broiler, layer, etc.
+  int32 initial_quantity = 4;
+  string arrival_date = 5;
+  string breed = 6;
+  string building = 7;       // building/house identifier
+}
+
+message GetGroupRequest {
+  string group_id = 1;
+  string farm_id = 2;
+}
+
+message UpdateGroupRequest {
+  string group_id = 1;
+  string farm_id = 2;
+  string name = 3;
+  string type = 4;
+  string breed = 5;
+  string building = 6;
+  string status = 7;         // active, sold, closed
+  string arrival_date = 8;
+}
+
+message DeleteGroupRequest {
+  string group_id = 1;
+  string farm_id = 2;
+}
+
+message ListGroupsRequest {
+  string farm_id = 1;
+  string status = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message ListGroupsResponse {
+  repeated Group groups = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message Group {
+  string id = 1;
+  string farm_id = 2;
+  string name = 3;
+  string type = 4;
+  int32 initial_quantity = 5;
+  int32 current_quantity = 6;
+  string arrival_date = 7;
+  string breed = 8;
+  string building = 9;
+  string status = 10;
+  int32 age_days = 11;
+  double mortality_rate = 12;
+  string created_at = 13;
+}
+
+// -------------------------------------------------------
+// Metric Type Messages
+// -------------------------------------------------------
+message CreateMetricTypeRequest {
+  string farm_id = 1;
+  string name = 2;
+  string unit = 3;
+  string data_type = 4;      // number, boolean, text
+  string category = 5;       // production, health, environment
+}
+
+message UpdateMetricTypeRequest {
+  string metric_type_id = 1;
+  string farm_id = 2;
+  string name = 3;
+  string unit = 4;
+  string data_type = 5;
+  string category = 6;
+}
+
+message ListMetricTypesRequest {
+  string farm_id = 1;
+  string category = 2;
+}
+
+message ListMetricTypesResponse {
+  repeated MetricType metric_types = 1;
+}
+
+message DeleteMetricTypeRequest {
+  string metric_type_id = 1;
+  string farm_id = 2;
+}
+
+message MetricType {
+  string id = 1;
+  string name = 2;
+  string unit = 3;
+  string data_type = 4;
+  string category = 5;
+  string farm_id = 6;
+}
+
+// -------------------------------------------------------
+// Metric Recording Messages
+// -------------------------------------------------------
+message RecordMetricsRequest {
+  string farm_id = 1;
+  string group_id = 2;
+  string task_occurrence_id = 3;
+  string recorded_by = 4;
+  repeated MetricEntry entries = 5;
+}
+
+message MetricEntry {
+  string metric_type_id = 1;
+  string value = 2;
+  string recorded_at = 3;
+}
+
+message RecordMetricsResponse {
+  bool success = 1;
+  int32 recorded_count = 2;
+}
+
+message GetMetricsRequest {
+  string farm_id = 1;
+  string group_id = 2;
+  string metric_type_id = 3;
+  string start_date = 4;
+  string end_date = 5;
+}
+
+message GetMetricsResponse {
+  repeated MetricRecord records = 1;
+}
+
+message MetricRecord {
+  string id = 1;
+  string group_id = 2;
+  string metric_type_id = 3;
+  string metric_name = 4;
+  string value = 5;
+  string unit = 6;
+  string recorded_at = 7;
+  string recorded_by = 8;
+}
+
+// -------------------------------------------------------
+// Mortality Messages
+// -------------------------------------------------------
+message RecordMortalityRequest {
+  string farm_id = 1;
+  string group_id = 2;
+  int32 count = 3;
+  string cause = 4;
+  string recorded_by = 5;
+  string date = 6;
+  string notes = 7;
+}
+
+message MortalityRecord {
+  string id = 1;
+  string group_id = 2;
+  int32 count = 3;
+  string cause = 4;
+  string date = 5;
+  string notes = 6;
+  int32 remaining_quantity = 7;
+}
+
+message GetMortalityHistoryRequest {
+  string farm_id = 1;
+  string group_id = 2;
+  string start_date = 3;
+  string end_date = 4;
+}
+
+message GetMortalityHistoryResponse {
+  repeated MortalityRecord records = 1;
+  int32 total_mortality = 2;
+  double mortality_rate = 3;
+}
+
+// -------------------------------------------------------
+// Analytics Messages
+// -------------------------------------------------------
+message GetAnalyticsRequest {
+  string farm_id = 1;
+  string group_id = 2;
+  string start_date = 3;
+  string end_date = 4;
+  string metric_type = 5;    // eggs, feed, mortality, productivity
+}
+
+message AnalyticsResponse {
+  repeated AnalyticsDataPoint data_points = 1;
+  AnalyticsSummary summary = 2;
+}
+
+message AnalyticsDataPoint {
+  string date = 1;
+  double value = 2;
+  string label = 3;
+}
+
+message AnalyticsSummary {
+  double total = 1;
+  double average = 2;
+  double min = 3;
+  double max = 4;
+  double trend_percentage = 5;
+}

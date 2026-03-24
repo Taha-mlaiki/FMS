@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package farm;
+
+// ================================================================
+// Farm Service — gRPC Contract
+// ================================================================
+// Handles farm creation, updates, and group management.
+// ================================================================
+
+service FarmService {
+  // --- Farm CRUD ---
+  rpc CreateFarm (CreateFarmRequest) returns (Farm);
+  rpc GetFarm (GetFarmRequest) returns (Farm);
+  rpc UpdateFarm (UpdateFarmRequest) returns (Farm);
+  rpc DeleteFarm (DeleteFarmRequest) returns (GenericResponse);
+  rpc ListFarms (ListFarmsRequest) returns (ListFarmsResponse);
+  
+  // --- Groups CRUD ---
+  rpc CreateGroup (CreateGroupRequest) returns (Group);
+  // ... more group RPCs to add later based on api-gateway
+}
+
+message GenericResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// -------------------------------------------------------
+// Farm Messages
+// -------------------------------------------------------
+message CreateFarmRequest {
+  string name = 1;
+  string address = 2;
+  string type = 3;
+}
+
+message GetFarmRequest {
+  string farm_id = 1;
+}
+
+message UpdateFarmRequest {
+  string farm_id = 1;
+  string name = 2;
+  string address = 3;
+  string type = 4;
+}
+
+message DeleteFarmRequest {
+  string farm_id = 1;
+}
+
+message ListFarmsRequest {
+  repeated string farm_ids = 1;
+}
+
+message ListFarmsResponse {
+  repeated Farm farms = 1;
+}
+
+message Farm {
+  string id = 1;
+  string name = 2;
+  string address = 3;
+  string type = 4;
+  string schema_name = 5;
+  string status = 6;
+  string created_at = 7;
+}
+
+// -------------------------------------------------------
+// Group Messages
+// -------------------------------------------------------
+message CreateGroupRequest {
+  string farm_id = 1;
+  string name = 2;
+  string species = 3;
+  string breed = 4;
+  string entry_date = 5;
+}
+
+message Group {
+  string id = 1;
+  string farm_id = 2;
+  string name = 3;
+  string species = 4;
+  string breed = 5;
+  int32 current_count = 6;
+  string entry_date = 7;
+  string status = 8;
+}

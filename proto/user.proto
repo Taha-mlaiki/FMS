@@ -1,0 +1,321 @@
+syntax = "proto3";
+
+package user;
+
+// ================================================================
+// User Service — gRPC Contract
+// ================================================================
+// Handles user management, farm CRUD, worker invitations,
+// profile management, and farm context switching.
+// ================================================================
+
+service UserService {
+  // --- Authentication ---
+  rpc Register (RegisterRequest) returns (AuthResponse);
+  rpc Login (LoginRequest) returns (AuthResponse);
+  rpc RefreshToken (RefreshTokenRequest) returns (AuthResponse);
+  rpc RevokeRefreshToken (RevokeRefreshTokenRequest) returns (GenericResponse);
+  rpc CheckEmailAvailability (CheckEmailRequest) returns (CheckEmailResponse);
+
+  // --- User Profile ---
+  rpc GetProfile (GetProfileRequest) returns (UserProfile);
+  rpc UpdateProfile (UpdateProfileRequest) returns (UserProfile);
+  rpc ChangePassword (ChangePasswordRequest) returns (GenericResponse);
+
+  // --- Worker Invitation ---
+  rpc InviteWorker (InviteWorkerRequest) returns (Invitation);
+  rpc AcceptInvitation (AcceptInvitationRequest) returns (AuthResponse);
+  rpc GetInvitation (GetInvitationRequest) returns (InvitationDetailsResponse);
+  rpc AcceptInvitationForUser (AcceptInvitationForUserRequest) returns (AcceptInvitationForUserResponse);
+  rpc ListUserInvitations (ListUserInvitationsRequest) returns (ListUserInvitationsResponse);
+  rpc RejectInvitationForUser (RejectInvitationForUserRequest) returns (GenericResponse);
+  rpc ListFarmMembers (ListFarmMembersRequest) returns (ListFarmMembersResponse);
+  rpc RemoveFarmMember (RemoveFarmMemberRequest) returns (GenericResponse);
+  rpc ListFarms (ListFarmsRequest) returns (ListFarmsResponse);
+  rpc ListOwnerFarms (ListFarmsRequest) returns (ListFarmsResponse);
+
+  // --- Farm Context ---
+  rpc SwitchFarm (SwitchFarmRequest) returns (AuthResponse);
+  rpc LinkUserToFarm (LinkUserToFarmRequest) returns (GenericResponse);
+
+  // --- Health ---
+  rpc HealthCheck (Empty) returns (HealthResponse);
+}
+
+// -------------------------------------------------------
+// Common Messages
+// -------------------------------------------------------
+message Empty {}
+
+message GenericResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message HealthResponse {
+  string status = 1;
+  string service = 2;
+}
+
+// -------------------------------------------------------
+// Auth Messages
+// -------------------------------------------------------
+message RegisterRequest {
+  string first_name = 1;
+  string last_name = 2;
+  string email = 3;
+  string password = 4;
+  string role = 5;
+  string phone = 6;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+  string phone = 3;
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message RevokeRefreshTokenRequest {
+  string user_id = 1;
+}
+
+message CheckEmailRequest {
+  string email = 1;
+}
+
+message CheckEmailResponse {
+  bool available = 1;
+}
+
+message AuthResponse {
+  string message = 1;
+  UserInfo user = 2;
+  string access_token = 3;
+  string refresh_token = 4;
+  Farm current_farm = 5;
+}
+
+message UserInfo {
+  string id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string phone = 5;
+  string avatar_url = 6;
+  string role = 7;
+}
+
+// -------------------------------------------------------
+// Profile Messages
+// -------------------------------------------------------
+message GetProfileRequest {
+  string user_id = 1;
+}
+
+message UpdateProfileRequest {
+  string user_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string phone = 4;
+  string avatar_url = 5;
+}
+
+message ChangePasswordRequest {
+  string user_id = 1;
+  string current_password = 2;
+  string new_password = 3;
+}
+
+message UserProfile {
+  string id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string phone = 5;
+  string avatar_url = 6;
+  string created_at = 7;
+}
+
+// -------------------------------------------------------
+// Farm Messages
+// -------------------------------------------------------
+message CreateFarmRequest {
+  string owner_id = 1;
+  string name = 2;
+  string address = 3;
+  string type = 4; // poultry, livestock, etc.
+}
+
+message GetFarmRequest {
+  string farm_id = 1;
+  string user_id = 2;
+}
+
+message UpdateFarmRequest {
+  string farm_id = 1;
+  string user_id = 2;
+  string name = 3;
+  string address = 4;
+  string type = 5;
+}
+
+message DeleteFarmRequest {
+  string farm_id = 1;
+  string user_id = 2;
+}
+
+message ListFarmsRequest {
+  string user_id = 1;
+  int32 page = 2;
+  int32 limit = 3;
+  string status = 4; // active, archived
+}
+
+message ListFarmsResponse {
+  repeated FarmWithRole farms = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message Farm {
+  string id = 1;
+  string name = 2;
+  string address = 3;
+  string type = 4;
+  string owner_id = 5;
+  string schema_name = 6;
+  string status = 7;
+  string created_at = 8;
+}
+
+message FarmWithRole {
+  Farm farm = 1;
+  string role = 2; // OWNER, WORKER
+}
+
+// -------------------------------------------------------
+// Invitation Messages
+// -------------------------------------------------------
+message InviteWorkerRequest {
+  string farm_id = 1;
+  string inviter_id = 2;
+  string email = 3;
+  string role = 4;
+}
+
+message AcceptInvitationRequest {
+  string token = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string password = 4;
+}
+
+message Invitation {
+  string id = 1;
+  string email = 2;
+  string farm_id = 3;
+  string token = 4;
+  string status = 5;
+  string expires_at = 6;
+}
+
+message GetInvitationRequest {
+  string token = 1;
+}
+
+message InvitationDetailsResponse {
+  string farm_name = 1;
+  string inviter_name = 2;
+  string role = 3;
+  string expires_at = 4;
+  string status = 5;
+}
+
+message AcceptInvitationForUserRequest {
+  string token = 1;
+  string user_id = 2;
+}
+
+message AcceptInvitationForUserResponse {
+  string farm_id = 1;
+  string role = 2;
+}
+
+message ListUserInvitationsRequest {
+  string user_id = 1;
+}
+
+message UserInvitation {
+  string id = 1;
+  string token = 2;
+  string farm_id = 3;
+  string farm_name = 4;
+  string role = 5;
+  string status = 6;
+  string inviter_id = 7;
+  string inviter_name = 8;
+  string email = 9;
+  string expires_at = 10;
+  string created_at = 11;
+}
+
+message ListUserInvitationsResponse {
+  repeated UserInvitation invitations = 1;
+}
+
+message RejectInvitationForUserRequest {
+  string token = 1;
+  string user_id = 2;
+}
+
+message ListFarmMembersRequest {
+  string farm_id = 1;
+  string user_id = 2;
+  int32 page = 3;
+  int32 limit = 4;
+  string status = 5;
+}
+
+message ListFarmMembersResponse {
+  repeated FarmMember members = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message FarmMember {
+  string user_id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string role = 5;
+  string joined_at = 6;
+  string phone = 7;
+  string status = 8;
+  string join_date = 9;
+}
+
+message RemoveFarmMemberRequest {
+  string farm_id = 1;
+  string owner_id = 2;
+  string member_id = 3;
+}
+
+// -------------------------------------------------------
+// Farm Context Messages
+// -------------------------------------------------------
+message SwitchFarmRequest {
+  string user_id = 1;
+  string farm_id = 2;
+}
+
+message LinkUserToFarmRequest {
+  string user_id = 1;
+  string farm_id = 2;
+  string role = 3;
+}

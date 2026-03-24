@@ -1,0 +1,173 @@
+syntax = "proto3";
+
+package report;
+
+// ================================================================
+// Report Service — gRPC Contract
+// ================================================================
+// Handles incident reports, report workflows (submit, review,
+// resolve), and report analytics.
+// ================================================================
+
+service ReportService {
+  // --- Report CRUD ---
+  rpc CreateReport (CreateReportRequest) returns (Report);
+  rpc GetReport (GetReportRequest) returns (Report);
+  rpc UpdateReport (UpdateReportRequest) returns (Report);
+  rpc DeleteReport (DeleteReportRequest) returns (GenericResponse);
+  rpc ListReports (ListReportsRequest) returns (ListReportsResponse);
+
+  // --- Report Workflow ---
+  rpc SubmitReport (SubmitReportRequest) returns (Report);
+  rpc ReviewReport (ReviewReportRequest) returns (Report);
+  rpc ResolveReport (ResolveReportRequest) returns (Report);
+
+  // --- Analytics ---
+  rpc GetReportAnalytics (GetReportAnalyticsRequest) returns (ReportAnalyticsResponse);
+
+  // --- Health ---
+  rpc HealthCheck (Empty) returns (HealthResponse);
+}
+
+// -------------------------------------------------------
+// Common Messages
+// -------------------------------------------------------
+message Empty {}
+
+message GenericResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message HealthResponse {
+  string status = 1;
+  string service = 2;
+}
+
+// -------------------------------------------------------
+// Report Messages
+// -------------------------------------------------------
+message CreateReportRequest {
+  string farm_id = 1;
+  string created_by = 2;
+  string title = 3;
+  string description = 4;
+  string type = 5;           // incident, progress, maintenance
+  string severity = 6;       // low, medium, high, critical
+  string task_id = 7;        // optional task linkage
+  repeated string group_ids = 8; // optional group associations
+}
+
+message GetReportRequest {
+  string report_id = 1;
+  string farm_id = 2;
+}
+
+message UpdateReportRequest {
+  string report_id = 1;
+  string farm_id = 2;
+  string title = 3;
+  string description = 4;
+  string type = 5;
+  string severity = 6;
+  string task_id = 7;
+  repeated string group_ids = 8;
+}
+
+message DeleteReportRequest {
+  string report_id = 1;
+  string farm_id = 2;
+}
+
+message ListReportsRequest {
+  string farm_id = 1;
+  string type = 2;
+  string severity = 3;
+  string task_id = 4;
+  string group_id = 5;       // backward compatibility single group filter
+  repeated string group_ids = 6; // preferred group filter array
+  string start_date = 7;
+  string end_date = 8;
+  int32 page = 9;
+  int32 limit = 10;
+  string sort_by = 11;       // created_at, severity
+}
+
+message ListReportsResponse {
+  repeated Report reports = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message Report {
+  string id = 1;
+  string farm_id = 2;
+  string created_by = 3;
+  string title = 4;
+  string description = 5;
+  string type = 6;
+  string severity = 7;
+  string task_id = 8;
+  repeated string group_ids = 9;
+  string created_at = 10;
+  string updated_at = 11;
+}
+
+// -------------------------------------------------------
+// Workflow Messages
+// -------------------------------------------------------
+message SubmitReportRequest {
+  string report_id = 1;
+  string farm_id = 2;
+  string submitted_by = 3;
+}
+
+message ReviewReportRequest {
+  string report_id = 1;
+  string farm_id = 2;
+  string reviewed_by = 3;
+  string review_notes = 4;
+}
+
+message ResolveReportRequest {
+  string report_id = 1;
+  string farm_id = 2;
+  string resolved_by = 3;
+  string resolution_notes = 4;
+}
+
+// -------------------------------------------------------
+// Analytics Messages
+// -------------------------------------------------------
+message GetReportAnalyticsRequest {
+  string farm_id = 1;
+  string start_date = 2;
+  string end_date = 3;
+}
+
+message ReportAnalyticsResponse {
+  int32 total_reports = 1;
+  int32 open_reports = 2;
+  int32 resolved_reports = 3;
+  double avg_resolution_time_hours = 4;
+  repeated ReportsByType by_type = 5;
+  repeated ReportsBySeverity by_severity = 6;
+  repeated ReportTrend trends = 7;
+}
+
+message ReportsByType {
+  string type = 1;
+  int32 count = 2;
+}
+
+message ReportsBySeverity {
+  string severity = 1;
+  int32 count = 2;
+}
+
+message ReportTrend {
+  string date = 1;
+  int32 created = 2;
+  int32 resolved = 3;
+}
