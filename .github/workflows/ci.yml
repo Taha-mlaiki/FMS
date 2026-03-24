@@ -1,0 +1,82 @@
+name: FMS CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # ============================================
+  # Lint & Type Check — All Services
+  # ============================================
+  lint-and-typecheck:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - services/auth-service
+          - services/user-service
+          - services/task-service
+          - services/production-service
+          - services/stock-service
+          - services/report-service
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.service }}
+        run: npm ci
+
+      - name: Type check
+        working-directory: ${{ matrix.service }}
+        run: npx tsc --noEmit
+
+      - name: Build
+        working-directory: ${{ matrix.service }}
+        run: npm run build
+
+  # ============================================
+  # Frontend — Lint, Type Check, Build
+  # ============================================
+  frontend:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Type check
+        working-directory: frontend
+        run: npx tsc --noEmit
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+  # ============================================
+  # Docker Build — Verify all images compile
+  # ============================================
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [lint-and-typecheck, frontend]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build all Docker images
+        run: docker compose build
