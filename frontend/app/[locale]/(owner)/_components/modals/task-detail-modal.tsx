@@ -140,7 +140,7 @@ export function TaskOccurrenceDetailModal({
         original: m.quantity,
       };
     });
-  }, [task?.materials, materialQuantities]);
+  }, [task, materialQuantities]);
 
   const isEditable = task?.status === 'todo' || task?.status === 'doing';
 
