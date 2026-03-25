@@ -332,7 +332,7 @@ export default function WorkersPage() {
                       <td className="px-4 py-3 text-sm text-[#5C5852]">
                         {status === 'pending'
                           ? '-'
-                          : formatJoinDate(member.joinDate || member.joinedAt)}
+                          : formatJoinDate(member.join_date || member.joinedAt)}
                       </td>
                     </tr>
                   );
