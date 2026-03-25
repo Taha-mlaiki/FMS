@@ -17,10 +17,12 @@ export class TaskSchedulerService {
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleDailyTaskGeneration() {
     this.logger.log('Starting daily task generation from templates...');
-    
+
     try {
       // 1. Get all farm IDs from the public.farms table
-      const farms = await this.baseDataSource.query('SELECT id FROM public.farms');
+      const farms = await this.baseDataSource.query(
+        'SELECT id FROM public.farms',
+      );
       this.logger.log(`Found ${farms.length} farms to process.`);
 
       for (const farm of farms) {
@@ -33,7 +35,7 @@ export class TaskSchedulerService {
 
   private async processFarmTasks(farmId: string) {
     this.logger.debug(`Processing tasks for farm: ${farmId}`);
-    
+
     try {
       // 2. Get all active templates for this farm
       const templates = await this.tasksService.listTemplates({
@@ -62,9 +64,10 @@ export class TaskSchedulerService {
     switch (template.recurrence) {
       case 'daily':
         return true;
-      case 'weekly':
+      case 'weekly': {
         const days = template.recurrenceConfig?.daysOfWeek || [];
         return days.includes(dayOfWeek);
+      }
       case 'monthly':
         return template.recurrenceConfig?.dayOfMonth === dayOfMonth;
       default:
@@ -84,7 +87,9 @@ export class TaskSchedulerService {
     });
 
     if (existing.length > 0) {
-      this.logger.debug(`Task already exists for template ${template.id} on ${scheduledDateStr}`);
+      this.logger.debug(
+        `Task already exists for template ${template.id} on ${scheduledDateStr}`,
+      );
       return;
     }
 
@@ -105,6 +110,8 @@ export class TaskSchedulerService {
       createdBy: 'system',
     });
 
-    this.logger.log(`Created occurrence for template ${template.id} on ${scheduledDateStr}`);
+    this.logger.log(
+      `Created occurrence for template ${template.id} on ${scheduledDateStr}`,
+    );
   }
 }

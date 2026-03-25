@@ -10,7 +10,10 @@ export class TaskGeneratorService {
 
   constructor(private readonly tenantManager: TenantConnectionManager) {}
 
-  async generateTasksForFarm(farmId: string, daysLookahead: number = 0): Promise<void> {
+  async generateTasksForFarm(
+    farmId: string,
+    daysLookahead: number = 0,
+  ): Promise<void> {
     try {
       const connection = await this.tenantManager.getTenantConnection(farmId);
       const templateRepo = connection.getRepository(TaskTemplate);
@@ -19,7 +22,7 @@ export class TaskGeneratorService {
       // Fetch active templates that have recurrence
       const templates = await templateRepo.find({ where: { isActive: true } });
       const recurringTemplates = templates.filter(
-        t => t.recurrence && t.recurrence !== 'once' && t.startDate
+        (t) => t.recurrence && t.recurrence !== 'once' && t.startDate,
       );
 
       if (!recurringTemplates.length) return;
@@ -36,8 +39,8 @@ export class TaskGeneratorService {
       }
 
       // Fetch existing tasks for these templates in this date window to avoid duplicates
-      const templateIds = recurringTemplates.map(t => t.id);
-      const dateStrs = datesToCheck.map(d => d.dateStr);
+      const templateIds = recurringTemplates.map((t) => t.id);
+      const dateStrs = datesToCheck.map((d) => d.dateStr);
 
       const existingTasks = await taskRepo.find({
         where: {
@@ -48,7 +51,7 @@ export class TaskGeneratorService {
 
       // Create a set of "templateId_dateStr" for quick lookup
       const existingSet = new Set(
-        existingTasks.map(t => `${t.templateId}_${t.scheduledDate}`)
+        existingTasks.map((t) => `${t.templateId}_${String(t.scheduledDate)}`),
       );
 
       const newTasks: Partial<Task>[] = [];
@@ -136,9 +139,10 @@ export class TaskGeneratorService {
 
       if (newTasks.length > 0) {
         await taskRepo.save(newTasks);
-        this.logger.log(`Generated ${newTasks.length} tasks for farm ${farmId}`);
+        this.logger.log(
+          `Generated ${newTasks.length} tasks for farm ${farmId}`,
+        );
       }
-
     } catch (error) {
       this.logger.error(`Error generating tasks for farm ${farmId}:`, error);
     }

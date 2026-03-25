@@ -1,7 +1,12 @@
 import { Controller, Logger } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { status as GrpcStatus, Metadata } from '@grpc/grpc-js';
-import { TasksService, TaskListFilter, TaskTemplateListFilter } from './tasks.service';
+import * as fs from 'fs';
+import {
+  TasksService,
+  TaskListFilter,
+  TaskTemplateListFilter,
+} from './tasks.service';
 
 @Controller()
 export class TasksController {
@@ -65,8 +70,8 @@ export class TasksController {
   @GrpcMethod('TaskService', 'CreateTaskTemplate')
   async createTaskTemplate(data: any, metadata: Metadata) {
     console.log('[DEBUG_GRPC_TASK_SERVICE_DATA]:', data);
-    require('fs').writeFileSync('payload.log', JSON.stringify(data, null, 2));
-    
+    fs.writeFileSync('payload.log', JSON.stringify(data, null, 2));
+
     const { farmId, userId, userRole } = this.extractMetadata(metadata);
 
     if (userRole !== 'OWNER') {
@@ -109,7 +114,10 @@ export class TasksController {
       });
     }
 
-    const template = await this.tasksService.findTemplateById(templateId, farmId);
+    const template = await this.tasksService.findTemplateById(
+      templateId,
+      farmId,
+    );
     if (!template) {
       throw new RpcException({
         code: GrpcStatus.NOT_FOUND,
@@ -143,7 +151,9 @@ export class TasksController {
       timeOfDay: data.timeOfDay || data.time_of_day,
       workerIds: data.workerIds || data.worker_ids,
       groupIds: data.groupIds || data.group_ids,
-      materials: data.materials ? this.normalizeMaterials(data.materials) : undefined,
+      materials: data.materials
+        ? this.normalizeMaterials(data.materials)
+        : undefined,
       isActive: data.isActive ?? data.is_active,
     };
 
@@ -152,7 +162,11 @@ export class TasksController {
       (key) => updateData[key] === undefined && delete updateData[key],
     );
 
-    const updated = await this.tasksService.updateTemplate(templateId, farmId, updateData);
+    const updated = await this.tasksService.updateTemplate(
+      templateId,
+      farmId,
+      updateData,
+    );
     return await this.mapTaskTemplate(updated, farmId);
   }
 
@@ -191,7 +205,9 @@ export class TasksController {
 
     const templates = await this.tasksService.listTemplates(filter);
     return {
-      templates: await Promise.all(templates.map((t) => this.mapTaskTemplate(t, farmId))),
+      templates: await Promise.all(
+        templates.map((t) => this.mapTaskTemplate(t, farmId)),
+      ),
     };
   }
 
@@ -216,7 +232,11 @@ export class TasksController {
       categoryId: data.categoryId || data.category_id || null,
       priority: data.priority || 'medium',
       templateId: data.templateId || data.template_id || null, // Link to template if provided
-      scheduledDate: data.scheduledDate || data.scheduled_date || data.startDate || data.start_date,
+      scheduledDate:
+        data.scheduledDate ||
+        data.scheduled_date ||
+        data.startDate ||
+        data.start_date,
       timeOfDay: data.timeOfDay || data.time_of_day || null,
       workerIds: data.workerIds || data.worker_ids || [],
       groupIds: data.groupIds || data.group_ids || [],
@@ -269,7 +289,9 @@ export class TasksController {
     }
 
     // Normalize status to lowercase to match DB values
-    const normalizedStatus = data.status ? this.normalizeStatus(data.status) : undefined;
+    const normalizedStatus = data.status
+      ? this.normalizeStatus(data.status)
+      : undefined;
 
     let updateData: any = {};
 
@@ -284,7 +306,9 @@ export class TasksController {
         status: normalizedStatus,
         workerIds: data.workerIds || data.worker_ids,
         groupIds: data.groupIds || data.group_ids,
-        materials: data.materials ? this.normalizeMaterials(data.materials) : undefined,
+        materials: data.materials
+          ? this.normalizeMaterials(data.materials)
+          : undefined,
         isActive: data.isActive ?? data.is_active,
         notes: data.notes,
       };
@@ -407,7 +431,9 @@ export class TasksController {
 
   private async mapTask(t: any, farmId: string) {
     const cat = await this.resolveCategory(t.categoryId, farmId);
-    this.logger.log(`Mapping task ${t.id}: groupIds=${JSON.stringify(t.groupIds)}, workerIds=${JSON.stringify(t.workerIds)}`);
+    this.logger.log(
+      `Mapping task ${t.id}: groupIds=${JSON.stringify(t.groupIds)}, workerIds=${JSON.stringify(t.workerIds)}`,
+    );
     const mapped = {
       id: t.id,
       farmId: t.farmId,
@@ -553,7 +579,8 @@ export class TasksController {
     if (!id || typeof id !== 'string') return false;
     const trimmed = id.trim();
     // More permissive regex that doesn't strictly check version/variant
-    const regex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    const regex =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
     return regex.test(trimmed);
   }
 }
