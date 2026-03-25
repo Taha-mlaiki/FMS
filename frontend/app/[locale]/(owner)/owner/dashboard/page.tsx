@@ -44,6 +44,7 @@ type WorkerDashboardResponse = {
   myReportsCount?: number;
   totalCompletedTasks?: number;
   totalSkippedTasks?: number;
+  totalTasks?: number;
   myFarmsCount?: number;
 };
 
@@ -117,7 +118,10 @@ function KpiCard({
             style={{ border: '1px solid #F0EDE4' }}
           >
             {trend.positive ? (
-              <TrendingUp className="w-3.5 h-3.5" style={{ color: '#059669' }} />
+              <TrendingUp
+                className="w-3.5 h-3.5"
+                style={{ color: '#059669' }}
+              />
             ) : (
               <TrendingDown
                 className="w-3.5 h-3.5"
@@ -230,7 +234,13 @@ const statusDotColors = {
   skipped: '#E76F51',
 };
 
-function TaskRow({ title, time, status, dateLabel, statusLabels }: Readonly<TaskRowProps>) {
+function TaskRow({
+  title,
+  time,
+  status,
+  dateLabel,
+  statusLabels,
+}: Readonly<TaskRowProps>) {
   return (
     <div
       className="flex items-center gap-3 px-4 py-3 hover:bg-[#FAFAF7] transition-colors"
@@ -683,7 +693,10 @@ export default function DashboardPage() {
               icon={Timer}
               variant="primary"
               trend={{
-                value: pendingToday > 0 ? t('worker.needsFollowup') : t('worker.noPendingTasks'),
+                value:
+                  pendingToday > 0
+                    ? t('worker.needsFollowup')
+                    : t('worker.noPendingTasks'),
                 positive: pendingToday === 0,
               }}
             />
