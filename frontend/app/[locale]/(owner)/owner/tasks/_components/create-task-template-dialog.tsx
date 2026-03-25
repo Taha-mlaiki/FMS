@@ -214,8 +214,29 @@ export function CreateTaskTemplateDialog({
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
 
+  // ── Actions ─────────────────────────────────────────────────────────────────
+
+  function resetForm() {
+    setTitle('');
+    setDescription('');
+    setCategoryId('');
+    setPriority('medium');
+    setTimeOfDay('08:00');
+    setStartDate(toIsoDate(new Date()));
+    setEndDate('');
+    setRecurrenceType('daily');
+    setDayOfMonth(1);
+    setMonthOfYear(1);
+    setDaysOfWeek([0]);
+    setWorkerIds([]);
+    setGroupIds([]);
+    setShowNewCategory(false);
+    setNewCategoryName('');
+  }
+
   // ── Populate form when editing ──────────────────────────────────────────────
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!open) return;
 
@@ -239,6 +260,7 @@ export function CreateTaskTemplateDialog({
       resetForm();
     }
   }, [open, template]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // ── Normalize data from hooks ───────────────────────────────────────────────
 
@@ -314,26 +336,6 @@ export function CreateTaskTemplateDialog({
       }))
       .filter((o) => o.value.length > 0);
   }, [groupsQuery.data]);
-
-  // ── Actions ─────────────────────────────────────────────────────────────────
-
-  function resetForm() {
-    setTitle('');
-    setDescription('');
-    setCategoryId('');
-    setPriority('medium');
-    setTimeOfDay('08:00');
-    setStartDate(toIsoDate(new Date()));
-    setEndDate('');
-    setRecurrenceType('daily');
-    setDayOfMonth(1);
-    setMonthOfYear(1);
-    setDaysOfWeek([0]);
-    setWorkerIds([]);
-    setGroupIds([]);
-    setShowNewCategory(false);
-    setNewCategoryName('');
-  }
 
   function toggleWeekDay(day: number) {
     setDaysOfWeek((prev) =>
