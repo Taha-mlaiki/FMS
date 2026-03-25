@@ -17,10 +17,15 @@ export class StockController {
 
   private extractMaterialId(data: any, metadata?: Metadata): string {
     const fromMeta = metadata?.get('material-id')?.[0] as string | undefined;
-    const fromMetaLower =
-      metadata?.get('material_id')?.[0] as string | undefined;
+    const fromMetaLower = metadata?.get('material_id')?.[0] as
+      | string
+      | undefined;
     const id =
-      fromMeta || fromMetaLower || data.materialId || data.material_id || data.id;
+      fromMeta ||
+      fromMetaLower ||
+      data.materialId ||
+      data.material_id ||
+      data.id;
 
     if (!id) {
       this.logger.error(
@@ -38,8 +43,9 @@ export class StockController {
 
   private extractTransactionId(data: any, metadata?: Metadata): string {
     const fromMeta = metadata?.get('transaction-id')?.[0] as string | undefined;
-    const fromMetaLower =
-      metadata?.get('transaction_id')?.[0] as string | undefined;
+    const fromMetaLower = metadata?.get('transaction_id')?.[0] as
+      | string
+      | undefined;
     const id =
       fromMeta ||
       fromMetaLower ||
@@ -66,7 +72,10 @@ export class StockController {
    * gateway may vanish from the data payload.  The gateway always mirrors the
    * value into gRPC metadata as a string, so we read it from there as fallback.
    */
-  private extractMinThreshold(data: any, metadata?: Metadata): number | undefined {
+  private extractMinThreshold(
+    data: any,
+    metadata?: Metadata,
+  ): number | undefined {
     // 1. Try the data payload (works when value != 0)
     if (typeof data.min_threshold === 'number') return data.min_threshold;
     if (typeof data.minThreshold === 'number') return data.minThreshold;
@@ -209,7 +218,10 @@ export class StockController {
   @GrpcMethod('StockService', 'ListTransactions')
   async listTransactions(data: any, metadata?: Metadata) {
     const farmId = this.extractFarmId(data, metadata);
-    const [transactions, total] = await this.transactionsService.list(farmId, data);
+    const [transactions, total] = await this.transactionsService.list(
+      farmId,
+      data,
+    );
     return {
       transactions: transactions.map((t) => this.mapTransaction(t)),
       total,
@@ -293,7 +305,8 @@ export class StockController {
 
   private mapMaterial(m: any) {
     const quantity = typeof m.quantity === 'number' ? m.quantity : 0;
-    const minThreshold = typeof m.minThreshold === 'number' ? m.minThreshold : 0;
+    const minThreshold =
+      typeof m.minThreshold === 'number' ? m.minThreshold : 0;
 
     return {
       id: m.id || '',
@@ -307,10 +320,22 @@ export class StockController {
       min_threshold: minThreshold,
       isLowStock: quantity <= minThreshold,
       is_low_stock: quantity <= minThreshold,
-      createdAt: m.createdAt instanceof Date ? m.createdAt.toISOString() : (m.createdAt || new Date().toISOString()),
-      created_at: m.createdAt instanceof Date ? m.createdAt.toISOString() : (m.createdAt || new Date().toISOString()),
-      updatedAt: m.updatedAt instanceof Date ? m.updatedAt.toISOString() : (m.updatedAt || new Date().toISOString()),
-      updated_at: m.updatedAt instanceof Date ? m.updatedAt.toISOString() : (m.updatedAt || new Date().toISOString()),
+      createdAt:
+        m.createdAt instanceof Date
+          ? m.createdAt.toISOString()
+          : m.createdAt || new Date().toISOString(),
+      created_at:
+        m.createdAt instanceof Date
+          ? m.createdAt.toISOString()
+          : m.createdAt || new Date().toISOString(),
+      updatedAt:
+        m.updatedAt instanceof Date
+          ? m.updatedAt.toISOString()
+          : m.updatedAt || new Date().toISOString(),
+      updated_at:
+        m.updatedAt instanceof Date
+          ? m.updatedAt.toISOString()
+          : m.updatedAt || new Date().toISOString(),
     };
   }
 
@@ -334,8 +359,10 @@ export class StockController {
       created_by: t.createdBy,
       referenceId: t.referenceId,
       reference_id: t.referenceId,
-      createdAt: t.createdAt instanceof Date ? t.createdAt.toISOString() : t.createdAt,
-      created_at: t.createdAt instanceof Date ? t.createdAt.toISOString() : t.createdAt,
+      createdAt:
+        t.createdAt instanceof Date ? t.createdAt.toISOString() : t.createdAt,
+      created_at:
+        t.createdAt instanceof Date ? t.createdAt.toISOString() : t.createdAt,
     };
   }
 }
