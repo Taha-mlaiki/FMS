@@ -76,7 +76,7 @@ export function WorkerSidebar() {
   const { farmId, farms, farm, role, userId, user } = useFarmContext();
   const taskCountQuery = useTaskCount({
     status: 'todo,pending',
-    worker_id: userId ?? undefined,
+    workerId: userId ?? undefined,
   });
 
   const navItems = navItemDefs.map((item) => ({
