@@ -1,4 +1,5 @@
 import { TaskOccurrenceDetailModal as BaseTaskOccurrenceDetailModal } from '@/app/[locale]/(owner)/_components/modals/task-detail-modal';
+import type React from 'react';
 
 type TaskStatus = 'todo' | 'doing' | 'completed' | 'skipped';
 
@@ -59,7 +60,5 @@ interface WorkerTaskOccurrenceDetailModalProps {
 export function TaskOccurrenceDetailModal(
   props: Readonly<WorkerTaskOccurrenceDetailModalProps>,
 ) {
-  // We use `as any` because Base component might have slightly broader/stricter types 
-  // than our local subset interface, but at runtime it handles the shapes correctly.
-  return <BaseTaskOccurrenceDetailModal {...(props as any)} />;
+  return <BaseTaskOccurrenceDetailModal {...(props as React.ComponentProps<typeof BaseTaskOccurrenceDetailModal>)} />;
 }

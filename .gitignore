@@ -30,3 +30,13 @@ postgres_data/
 *.log
 coverage/
 .gemini/
+.claude/
+
+# Project docs (not for repo)
+instruction.md
+instruction.csv
+COPILOT_CONTEXT.md
+missing-features.md
+
+# Build artifacts
+*.tsbuildinfo

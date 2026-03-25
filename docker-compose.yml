@@ -14,17 +14,16 @@ services:
       - "3001:3001"
     environment:
       - PORT=3001
-      - AUTH_GRPC_URL=auth-service:50051
-      - USER_GRPC_URL=user-service:50052
-      - TASK_GRPC_URL=task-service:50053
+      - USER_GRPC_URL=user-service:50051
+      - FARM_GRPC_URL=farm-service:50052
+      - TASKS_GRPC_URL=task-service:50053
       - PRODUCTION_GRPC_URL=production-service:50054
       - STOCK_GRPC_URL=stock-service:50055
-      - REPORT_GRPC_URL=report-service:50056
+      - REPORTS_GRPC_URL=report-service:50056
       - JWT_SECRET=${JWT_SECRET}
-      - PROTO_PATH=../../proto
     depends_on:
-      - auth-service
       - user-service
+      - farm-service
       - task-service
       - production-service
       - stock-service
@@ -32,25 +31,7 @@ services:
     restart: unless-stopped
 
   # ==============================================================
-  # AUTH SERVICE — gRPC (port 50051)
-  # ==============================================================
-  auth-service:
-    build:
-      context: .
-      dockerfile: services/auth-service/Dockerfile
-    environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=auth_service_db
-      - JWT_SECRET=${JWT_SECRET}
-    depends_on:
-      - postgres
-    restart: unless-stopped
-
-  # ==============================================================
-  # USER SERVICE — gRPC (port 50052)
+  # USER SERVICE — gRPC (port 50051)
   # ==============================================================
   user-service:
     build:
@@ -64,7 +45,26 @@ services:
       - DB_NAME=user_service_db
       - JWT_SECRET=${JWT_SECRET}
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ==============================================================
+  # FARM SERVICE — gRPC (port 50052)
+  # ==============================================================
+  farm-service:
+    build:
+      context: .
+      dockerfile: services/farm-service/Dockerfile
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=farm_service_db
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
   # ==============================================================
@@ -83,7 +83,8 @@ services:
       - PRODUCTION_GRPC_URL=production-service:50054
       - STOCK_GRPC_URL=stock-service:50055
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
   # ==============================================================
@@ -100,7 +101,8 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=production_service_db
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
   # ==============================================================
@@ -117,7 +119,8 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=stock_service_db
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
   # ==============================================================
@@ -134,7 +137,8 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=report_service_db
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
   # ==============================================================
@@ -145,7 +149,7 @@ services:
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=auth_service_db
+      - POSTGRES_DB=user_service_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh

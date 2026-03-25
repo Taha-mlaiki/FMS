@@ -3,6 +3,7 @@ WORKDIR /app
 COPY services/task-service/package*.json ./
 RUN npm ci
 COPY services/task-service/ .
+COPY shared /shared
 RUN npm run build
 
 FROM node:20-alpine AS production

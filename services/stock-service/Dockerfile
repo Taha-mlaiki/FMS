@@ -3,6 +3,7 @@ WORKDIR /app
 COPY services/stock-service/package*.json ./
 RUN npm ci
 COPY services/stock-service/ .
+COPY shared /shared
 RUN npm run build
 
 FROM node:20-alpine AS production

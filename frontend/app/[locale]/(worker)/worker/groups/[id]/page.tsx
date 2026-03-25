@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { AlertCircle, ChevronRight, Loader2, RefreshCw } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+
+type TFunction = ReturnType<typeof useTranslations>;
 import {
   Area,
   AreaChart,
@@ -61,13 +63,13 @@ type ReportItem = {
   created_at?: string;
 };
 
-const getStatusStyles = (t: any) => ({
+const getStatusStyles = (t: TFunction) => ({
   active: { bg: '#D8F3DC', color: '#1B4332', label: t('statusActive') },
   sold: { bg: '#DBEAFE', color: '#1E40AF', label: t('statusSold') },
   closed: { bg: '#E4E0D8', color: '#5C5852', label: t('statusClosed') },
 });
 
-const getReportStatusStyles = (t: any) => ({
+const getReportStatusStyles = (t: TFunction) => ({
   open: { bg: '#FDDCB5', color: '#7A5C00', label: t('statusOpen') },
   in_review: { bg: '#DBEAFE', color: '#1E40AF', label: t('statusInReview') },
   resolved: { bg: '#D8F3DC', color: '#1B4332', label: t('statusResolved') },
@@ -108,7 +110,7 @@ function normalizeStatus(value?: string): GroupStatus {
   return 'active';
 }
 
-function getTypeLabel(t: any, type?: string, species?: string, breed?: string): string {
+function getTypeLabel(t: TFunction, type?: string, species?: string, breed?: string): string {
   const source = (type || species || breed || '').toLowerCase();
   if (source === 'broiler') return t('typeBroiler');
   if (source === 'layer') return t('typeLayer');
@@ -117,7 +119,7 @@ function getTypeLabel(t: any, type?: string, species?: string, breed?: string): 
   return type || species || breed || t('unspecified');
 }
 
-function normalizeGroup(t: any, payload: unknown): GroupViewModel | null {
+function normalizeGroup(t: TFunction, payload: unknown): GroupViewModel | null {
   if (!payload || typeof payload !== 'object') return null;
 
   const source = payload as Record<string, unknown>;
@@ -147,6 +149,7 @@ function normalizeGroup(t: any, payload: unknown): GroupViewModel | null {
     id,
     name: toString(group.name) || t("unnamedGroup"),
     typeLabel: getTypeLabel(
+      t,
       toString(group.type),
       toString(group.species),
       toString(group.breed),
@@ -190,7 +193,7 @@ function normalizeReports(payload: unknown): ReportItem[] {
   return [];
 }
 
-function chartPoints(t: any, records: MetricRecord[]) {
+function chartPoints(t: TFunction, records: MetricRecord[]) {
   return records
     .filter(
       (record) => typeof record.value !== 'undefined' && record.value !== null,
@@ -236,7 +239,7 @@ export default function WorkerGroupDetailPage() {
 
   const group = useMemo(
     () => normalizeGroup(t, groupQuery.data),
-    [groupQuery.data],
+    [t, groupQuery.data],
   );
   const metrics = useMemo(
     () => normalizeMetricRecords(metricsQuery.data),
@@ -250,7 +253,7 @@ export default function WorkerGroupDetailPage() {
     () => normalizeReports(reportsQuery.data),
     [reportsQuery.data],
   );
-  const points = useMemo(() => chartPoints(t, metrics), [metrics]);
+  const points = useMemo(() => chartPoints(t, metrics), [t, metrics]);
 
   if (groupQuery.isLoading) {
     return (
@@ -616,7 +619,7 @@ export default function WorkerGroupDetailPage() {
           ) : (
             <div className="space-y-3">
               {reports.map((report) => {
-                const styles = (getReportStatusStyles(t) as any)[
+                const styles = (getReportStatusStyles(t) as Record<string, { bg: string; color: string; label: string }>)[
                   (report.status ?? '').toLowerCase()
                 ] ?? {
                   bg: '#F0EDE4',

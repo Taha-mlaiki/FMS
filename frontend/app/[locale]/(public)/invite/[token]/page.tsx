@@ -44,6 +44,8 @@ function LoadingSkeleton() {
   );
 }
 
+const PAGE_LOAD_TIME = Date.now();
+
 export default function InviteTokenPage() {
   const t = useTranslations('invite');
   const params = useParams();
@@ -60,7 +62,7 @@ export default function InviteTokenPage() {
     if (!expiresAt) return t('timeUndefined');
 
     const target = new Date(expiresAt).getTime();
-    const diffMs = target - Date.now();
+    const diffMs = target - PAGE_LOAD_TIME;
     if (diffMs <= 0) return t('expired');
 
     const hours = Math.ceil(diffMs / (1000 * 60 * 60));
