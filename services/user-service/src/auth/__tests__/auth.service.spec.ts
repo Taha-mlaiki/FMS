@@ -117,11 +117,13 @@ describe('AuthService', () => {
 
     it('should register a new user and return tokens', async () => {
       const createdUser = { ...mockUser, email: registerDto.email };
-      usersService.create!.mockResolvedValue(createdUser as any);
-      jwtService.signAsync!
+      (usersService.create as jest.Mock).mockResolvedValue(createdUser as any);
+      (jwtService.signAsync as jest.Mock)
         .mockResolvedValueOnce('access-token')
         .mockResolvedValueOnce('refresh-token');
-      usersService.setCurrentRefreshToken!.mockResolvedValue(undefined);
+      (usersService.setCurrentRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       const result = await authService.register(registerDto);
 
@@ -143,11 +145,15 @@ describe('AuthService', () => {
     it('should register a WORKER role when specified', async () => {
       const workerDto: RegisterDto = { ...registerDto, role: 'WORKER' };
       const createdWorker = { ...mockUser, role: UserRole.WORKER };
-      usersService.create!.mockResolvedValue(createdWorker as any);
-      jwtService.signAsync!
+      (usersService.create as jest.Mock).mockResolvedValue(
+        createdWorker as any,
+      );
+      (jwtService.signAsync as jest.Mock)
         .mockResolvedValueOnce('access-token')
         .mockResolvedValueOnce('refresh-token');
-      usersService.setCurrentRefreshToken!.mockResolvedValue(undefined);
+      (usersService.setCurrentRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       await authService.register(workerDto);
 
@@ -159,11 +165,13 @@ describe('AuthService', () => {
 
     it('should default to OWNER role for unrecognized roles', async () => {
       const unknownRoleDto: RegisterDto = { ...registerDto, role: 'UNKNOWN' };
-      usersService.create!.mockResolvedValue(mockUser as any);
-      jwtService.signAsync!
+      (usersService.create as jest.Mock).mockResolvedValue(mockUser as any);
+      (jwtService.signAsync as jest.Mock)
         .mockResolvedValueOnce('at')
         .mockResolvedValueOnce('rt');
-      usersService.setCurrentRefreshToken!.mockResolvedValue(undefined);
+      (usersService.setCurrentRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       await authService.register(unknownRoleDto);
 
@@ -174,7 +182,7 @@ describe('AuthService', () => {
     });
 
     it('should propagate ConflictException for duplicate email', async () => {
-      usersService.create!.mockRejectedValue(
+      (usersService.create as jest.Mock).mockRejectedValue(
         new ConflictException('auth.email_already_exists'),
       );
 
@@ -184,12 +192,17 @@ describe('AuthService', () => {
     });
 
     it('should include phone number when provided', async () => {
-      const dtoWithPhone: RegisterDto = { ...registerDto, phone: '+9876543210' };
-      usersService.create!.mockResolvedValue(mockUser as any);
-      jwtService.signAsync!
+      const dtoWithPhone: RegisterDto = {
+        ...registerDto,
+        phone: '+9876543210',
+      };
+      (usersService.create as jest.Mock).mockResolvedValue(mockUser as any);
+      (jwtService.signAsync as jest.Mock)
         .mockResolvedValueOnce('at')
         .mockResolvedValueOnce('rt');
-      usersService.setCurrentRefreshToken!.mockResolvedValue(undefined);
+      (usersService.setCurrentRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       await authService.register(dtoWithPhone);
 
@@ -210,13 +223,19 @@ describe('AuthService', () => {
         password: 'CorrectPass',
       };
 
-      usersService.findByEmail!.mockResolvedValue(mockUser as any);
+      (usersService.findByEmail as jest.Mock).mockResolvedValue(
+        mockUser as any,
+      );
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      farmsService.getUserFarms!.mockResolvedValue([mockFarm as any]);
-      jwtService.signAsync!
+      (farmsService.getUserFarms as jest.Mock).mockResolvedValue([
+        mockFarm as any,
+      ]);
+      (jwtService.signAsync as jest.Mock)
         .mockResolvedValueOnce('access-token')
         .mockResolvedValueOnce('refresh-token');
-      usersService.setCurrentRefreshToken!.mockResolvedValue(undefined);
+      (usersService.setCurrentRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       const result = await authService.login(loginDto);
 
@@ -236,13 +255,17 @@ describe('AuthService', () => {
         password: 'CorrectPass',
       };
 
-      usersService.findByPhone!.mockResolvedValue(mockUser as any);
+      (usersService.findByPhone as jest.Mock).mockResolvedValue(
+        mockUser as any,
+      );
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      farmsService.getUserFarms!.mockResolvedValue([]);
-      jwtService.signAsync!
+      (farmsService.getUserFarms as jest.Mock).mockResolvedValue([]);
+      (jwtService.signAsync as jest.Mock)
         .mockResolvedValueOnce('at')
         .mockResolvedValueOnce('rt');
-      usersService.setCurrentRefreshToken!.mockResolvedValue(undefined);
+      (usersService.setCurrentRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       const result = await authService.login(loginDto);
 
@@ -251,7 +274,7 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException for non-existent user', async () => {
-      usersService.findByEmail!.mockResolvedValue(null);
+      (usersService.findByEmail as jest.Mock).mockResolvedValue(null);
 
       await expect(
         authService.login({ email: 'wrong@example.com', password: 'pass' }),
@@ -259,7 +282,9 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException for wrong password', async () => {
-      usersService.findByEmail!.mockResolvedValue(mockUser as any);
+      (usersService.findByEmail as jest.Mock).mockResolvedValue(
+        mockUser as any,
+      );
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       await expect(
@@ -268,13 +293,17 @@ describe('AuthService', () => {
     });
 
     it('should login successfully without farm context', async () => {
-      usersService.findByEmail!.mockResolvedValue(mockUser as any);
+      (usersService.findByEmail as jest.Mock).mockResolvedValue(
+        mockUser as any,
+      );
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      farmsService.getUserFarms!.mockResolvedValue([]);
-      jwtService.signAsync!
+      (farmsService.getUserFarms as jest.Mock).mockResolvedValue([]);
+      (jwtService.signAsync as jest.Mock)
         .mockResolvedValueOnce('at')
         .mockResolvedValueOnce('rt');
-      usersService.setCurrentRefreshToken!.mockResolvedValue(undefined);
+      (usersService.setCurrentRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       const result = await authService.login({
         email: 'test@example.com',
@@ -286,13 +315,19 @@ describe('AuthService', () => {
     });
 
     it('should include farm context when user has farms', async () => {
-      usersService.findByEmail!.mockResolvedValue(mockUser as any);
+      (usersService.findByEmail as jest.Mock).mockResolvedValue(
+        mockUser as any,
+      );
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      farmsService.getUserFarms!.mockResolvedValue([mockFarm as any]);
-      jwtService.signAsync!
+      (farmsService.getUserFarms as jest.Mock).mockResolvedValue([
+        mockFarm as any,
+      ]);
+      (jwtService.signAsync as jest.Mock)
         .mockResolvedValueOnce('at')
         .mockResolvedValueOnce('rt');
-      usersService.setCurrentRefreshToken!.mockResolvedValue(undefined);
+      (usersService.setCurrentRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       const result = await authService.login({
         email: 'test@example.com',
@@ -308,10 +343,12 @@ describe('AuthService', () => {
   // ===========================================================
   describe('generateTokens', () => {
     it('should generate access and refresh tokens', async () => {
-      jwtService.signAsync!
+      (jwtService.signAsync as jest.Mock)
         .mockResolvedValueOnce('access-token')
         .mockResolvedValueOnce('refresh-token');
-      usersService.setCurrentRefreshToken!.mockResolvedValue(undefined);
+      (usersService.setCurrentRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       const result = await authService.generateTokens('user-id');
 
@@ -330,10 +367,12 @@ describe('AuthService', () => {
     });
 
     it('should include farmId in JWT payload when provided', async () => {
-      jwtService.signAsync!
+      (jwtService.signAsync as jest.Mock)
         .mockResolvedValueOnce('at')
         .mockResolvedValueOnce('rt');
-      usersService.setCurrentRefreshToken!.mockResolvedValue(undefined);
+      (usersService.setCurrentRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       const result = await authService.generateTokens('user-id', 'farm-id');
 
@@ -345,10 +384,12 @@ describe('AuthService', () => {
     });
 
     it('should set farmId to null when no farm provided', async () => {
-      jwtService.signAsync!
+      (jwtService.signAsync as jest.Mock)
         .mockResolvedValueOnce('at')
         .mockResolvedValueOnce('rt');
-      usersService.setCurrentRefreshToken!.mockResolvedValue(undefined);
+      (usersService.setCurrentRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       const result = await authService.generateTokens('user-id');
 
@@ -356,10 +397,12 @@ describe('AuthService', () => {
     });
 
     it('should store hashed refresh token in DB', async () => {
-      jwtService.signAsync!
+      (jwtService.signAsync as jest.Mock)
         .mockResolvedValueOnce('at')
         .mockResolvedValueOnce('refresh-token');
-      usersService.setCurrentRefreshToken!.mockResolvedValue(undefined);
+      (usersService.setCurrentRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       await authService.generateTokens('user-id');
 
@@ -375,17 +418,19 @@ describe('AuthService', () => {
   // ===========================================================
   describe('refreshTokens', () => {
     it('should refresh tokens with a valid refresh token', async () => {
-      jwtService.verifyAsync!.mockResolvedValue({
+      (jwtService.verifyAsync as jest.Mock).mockResolvedValue({
         sub: 'user-id',
         farmId: 'farm-id',
       });
-      usersService.getUserIfRefreshTokenMatches!.mockResolvedValue(
-        mockUser as any,
-      );
-      jwtService.signAsync!
+      (
+        usersService.getUserIfRefreshTokenMatches as jest.Mock
+      ).mockResolvedValue(mockUser as any);
+      (jwtService.signAsync as jest.Mock)
         .mockResolvedValueOnce('new-access')
         .mockResolvedValueOnce('new-refresh');
-      usersService.setCurrentRefreshToken!.mockResolvedValue(undefined);
+      (usersService.setCurrentRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       const result = await authService.refreshTokens('valid-refresh-token');
 
@@ -393,36 +438,41 @@ describe('AuthService', () => {
         'valid-refresh-token',
         { secret: 'test-jwt-secret' },
       );
-      expect(
-        usersService.getUserIfRefreshTokenMatches,
-      ).toHaveBeenCalledWith('valid-refresh-token', 'user-id');
+      expect(usersService.getUserIfRefreshTokenMatches).toHaveBeenCalledWith(
+        'valid-refresh-token',
+        'user-id',
+      );
       expect(result.accessToken).toBe('new-access');
       expect(result.refreshToken).toBe('new-refresh');
     });
 
     it('should throw UnauthorizedException for expired refresh token', async () => {
-      jwtService.verifyAsync!.mockRejectedValue(new Error('jwt expired'));
+      (jwtService.verifyAsync as jest.Mock).mockRejectedValue(
+        new Error('jwt expired'),
+      );
 
-      await expect(
-        authService.refreshTokens('expired-token'),
-      ).rejects.toThrow(UnauthorizedException);
+      await expect(authService.refreshTokens('expired-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should throw UnauthorizedException for invalid refresh token', async () => {
-      jwtService.verifyAsync!.mockRejectedValue(
+      (jwtService.verifyAsync as jest.Mock).mockRejectedValue(
         new Error('invalid signature'),
       );
 
-      await expect(
-        authService.refreshTokens('tampered-token'),
-      ).rejects.toThrow(UnauthorizedException);
+      await expect(authService.refreshTokens('tampered-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should throw when refresh token does not match DB hash', async () => {
-      jwtService.verifyAsync!.mockResolvedValue({ sub: 'user-id' });
-      usersService.getUserIfRefreshTokenMatches!.mockRejectedValue(
-        new UnauthorizedException('Invalid refresh token'),
-      );
+      (jwtService.verifyAsync as jest.Mock).mockResolvedValue({
+        sub: 'user-id',
+      });
+      (
+        usersService.getUserIfRefreshTokenMatches as jest.Mock
+      ).mockRejectedValue(new UnauthorizedException('Invalid refresh token'));
 
       await expect(
         authService.refreshTokens('mismatched-token'),
@@ -435,7 +485,9 @@ describe('AuthService', () => {
   // ===========================================================
   describe('revokeRefreshToken', () => {
     it('should revoke the refresh token for a user', async () => {
-      usersService.removeRefreshToken!.mockResolvedValue(undefined as any);
+      (usersService.removeRefreshToken as jest.Mock).mockResolvedValue(
+        undefined as any,
+      );
 
       await authService.revokeRefreshToken('user-id');
 
@@ -448,13 +500,15 @@ describe('AuthService', () => {
   // ===========================================================
   describe('switchFarm', () => {
     it('should switch farm context and return new tokens', async () => {
-      farmsService.findByUserId!.mockResolvedValue([
+      (farmsService.findByUserId as jest.Mock).mockResolvedValue([
         { farm: { id: 'farm-1' }, role: 'OWNER' },
       ]);
-      jwtService.signAsync!
+      (jwtService.signAsync as jest.Mock)
         .mockResolvedValueOnce('new-at')
         .mockResolvedValueOnce('new-rt');
-      usersService.setCurrentRefreshToken!.mockResolvedValue(undefined);
+      (usersService.setCurrentRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       const result = await authService.switchFarm('user-id', 'farm-1');
 
@@ -463,7 +517,7 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException when user has no access to farm', async () => {
-      farmsService.findByUserId!.mockResolvedValue([
+      (farmsService.findByUserId as jest.Mock).mockResolvedValue([
         { farm: { id: 'other-farm' }, role: 'OWNER' },
       ]);
 
@@ -473,7 +527,7 @@ describe('AuthService', () => {
     });
 
     it('should throw when user has no farms at all', async () => {
-      farmsService.findByUserId!.mockResolvedValue([]);
+      (farmsService.findByUserId as jest.Mock).mockResolvedValue([]);
 
       await expect(
         authService.switchFarm('user-id', 'any-farm'),
@@ -486,7 +540,7 @@ describe('AuthService', () => {
   // ===========================================================
   describe('checkEmailAvailability', () => {
     it('should return available: true when email is not taken', async () => {
-      usersService.findByEmail!.mockResolvedValue(null);
+      (usersService.findByEmail as jest.Mock).mockResolvedValue(null);
 
       const result = await authService.checkEmailAvailability('new@test.com');
 
@@ -494,11 +548,12 @@ describe('AuthService', () => {
     });
 
     it('should return available: false when email is taken', async () => {
-      usersService.findByEmail!.mockResolvedValue(mockUser as any);
-
-      const result = await authService.checkEmailAvailability(
-        'test@example.com',
+      (usersService.findByEmail as jest.Mock).mockResolvedValue(
+        mockUser as any,
       );
+
+      const result =
+        await authService.checkEmailAvailability('test@example.com');
 
       expect(result.available).toBe(false);
     });
@@ -509,7 +564,7 @@ describe('AuthService', () => {
   // ===========================================================
   describe('linkUserToFarm', () => {
     it('should link user to farm with OWNER role by default', async () => {
-      farmsService.linkUserToFarm!.mockResolvedValue(undefined);
+      (farmsService.linkUserToFarm as jest.Mock).mockResolvedValue(undefined);
 
       await authService.linkUserToFarm('user-id', 'farm-id');
 
@@ -521,7 +576,7 @@ describe('AuthService', () => {
     });
 
     it('should link user to farm with WORKER role', async () => {
-      farmsService.linkUserToFarm!.mockResolvedValue(undefined);
+      (farmsService.linkUserToFarm as jest.Mock).mockResolvedValue(undefined);
 
       await authService.linkUserToFarm('user-id', 'farm-id', 'WORKER');
 
@@ -533,7 +588,7 @@ describe('AuthService', () => {
     });
 
     it('should normalize role to uppercase', async () => {
-      farmsService.linkUserToFarm!.mockResolvedValue(undefined);
+      (farmsService.linkUserToFarm as jest.Mock).mockResolvedValue(undefined);
 
       await authService.linkUserToFarm('user-id', 'farm-id', 'admin');
 

@@ -18,7 +18,6 @@ import { AuthModule } from './auth/auth.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const pass = configService.get<string>('DB_PASSWORD');
         return {
           type: 'postgres',
           host: configService.get<string>('DB_HOST') || 'localhost',

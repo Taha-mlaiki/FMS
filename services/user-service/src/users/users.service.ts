@@ -99,7 +99,8 @@ export class UsersService {
     if (!user) throw new NotFoundException('auth.user_not_found');
 
     const isMatch = await bcrypt.compare(currentPlain, user.passwordHash);
-    if (!isMatch) throw new UnauthorizedException('auth.current_password_incorrect');
+    if (!isMatch)
+      throw new UnauthorizedException('auth.current_password_incorrect');
 
     const salt = await bcrypt.genSalt(12);
     user.passwordHash = await bcrypt.hash(nextPlain, salt);

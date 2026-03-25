@@ -12,7 +12,7 @@ import { FarmsModule } from '../farms/farms.module';
     FarmsModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
       }),
       inject: [ConfigService],

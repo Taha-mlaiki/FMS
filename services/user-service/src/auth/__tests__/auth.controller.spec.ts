@@ -1,10 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RpcException } from '@nestjs/microservices';
 import { status as GrpcStatus } from '@grpc/grpc-js';
-import {
-  UnauthorizedException,
-  ConflictException,
-} from '@nestjs/common';
+import { UnauthorizedException, ConflictException } from '@nestjs/common';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
 import { UserRole } from '../../users/entities/user.entity';
@@ -68,7 +65,7 @@ describe('AuthController', () => {
   // ===========================================================
   describe('register', () => {
     it('should register and return formatted gRPC response', async () => {
-      authService.register!.mockResolvedValue({
+      (authService.register as jest.Mock).mockResolvedValue({
         ...mockTokens,
         user: mockUser as any,
       });
@@ -98,7 +95,7 @@ describe('AuthController', () => {
     it('should throw RpcException with ALREADY_EXISTS for duplicate email', async () => {
       const error = new ConflictException('auth.email_already_exists');
       (error as any).status = 409;
-      authService.register!.mockRejectedValue(error);
+      (authService.register as jest.Mock).mockRejectedValue(error);
 
       await expect(
         controller.register({
@@ -128,7 +125,7 @@ describe('AuthController', () => {
     it('should throw RpcException with INTERNAL for unknown errors', async () => {
       const error = new Error('DB connection failed');
       (error as any).status = 500;
-      authService.register!.mockRejectedValue(error);
+      (authService.register as jest.Mock).mockRejectedValue(error);
 
       try {
         await controller.register({
@@ -159,7 +156,7 @@ describe('AuthController', () => {
         createdAt: '2026-01-01',
       };
 
-      authService.login!.mockResolvedValue({
+      (authService.login as jest.Mock).mockResolvedValue({
         ...mockTokens,
         user: mockUser as any,
         farm: mockFarm as any,
@@ -172,13 +169,13 @@ describe('AuthController', () => {
 
       expect(result.accessToken).toBe('access-token');
       expect(result.message).toBe('Login successful');
-      expect(result.user.id).toBe(mockUser.id);
+      expect(result.user!.id).toBe(mockUser.id);
       expect(result.current_farm).toBeDefined();
       expect(result.current_farm!.id).toBe('farm-1');
     });
 
     it('should login without farm context', async () => {
-      authService.login!.mockResolvedValue({
+      (authService.login as jest.Mock).mockResolvedValue({
         ...mockTokens,
         user: mockUser as any,
         farm: undefined,
@@ -195,7 +192,7 @@ describe('AuthController', () => {
     it('should throw RpcException with UNAUTHENTICATED for invalid credentials', async () => {
       const error = new UnauthorizedException('auth.invalid_credentials');
       (error as any).status = 401;
-      authService.login!.mockRejectedValue(error);
+      (authService.login as jest.Mock).mockRejectedValue(error);
 
       try {
         await controller.login({ email: 'test@example.com', password: 'bad' });
@@ -212,7 +209,7 @@ describe('AuthController', () => {
   // ===========================================================
   describe('refreshToken', () => {
     it('should refresh and return new tokens', async () => {
-      authService.refreshTokens!.mockResolvedValue({
+      (authService.refreshTokens as jest.Mock).mockResolvedValue({
         accessToken: 'new-at',
         refreshToken: 'new-rt',
         userId: 'uid',
@@ -236,7 +233,7 @@ describe('AuthController', () => {
     });
 
     it('should throw UNAUTHENTICATED for expired refresh token', async () => {
-      authService.refreshTokens!.mockRejectedValue(
+      (authService.refreshTokens as jest.Mock).mockRejectedValue(
         new UnauthorizedException('expired'),
       );
 
@@ -255,7 +252,7 @@ describe('AuthController', () => {
   // ===========================================================
   describe('switchFarm', () => {
     it('should switch farm and return new tokens', async () => {
-      authService.switchFarm!.mockResolvedValue({
+      (authService.switchFarm as jest.Mock).mockResolvedValue({
         accessToken: 'farm-at',
         refreshToken: 'farm-rt',
         userId: 'uid',
@@ -273,7 +270,7 @@ describe('AuthController', () => {
     });
 
     it('should throw PERMISSION_DENIED when user lacks access', async () => {
-      authService.switchFarm!.mockRejectedValue(
+      (authService.switchFarm as jest.Mock).mockRejectedValue(
         new UnauthorizedException('no access'),
       );
 
@@ -295,7 +292,9 @@ describe('AuthController', () => {
   // ===========================================================
   describe('revokeRefreshToken', () => {
     it('should revoke and return success', async () => {
-      authService.revokeRefreshToken!.mockResolvedValue(undefined);
+      (authService.revokeRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       const result = await controller.revokeRefreshToken({
         user_id: 'uid',
@@ -305,9 +304,9 @@ describe('AuthController', () => {
     });
 
     it('should throw INVALID_ARGUMENT when user_id is missing', async () => {
-      await expect(
-        controller.revokeRefreshToken({}),
-      ).rejects.toThrow(RpcException);
+      await expect(controller.revokeRefreshToken({})).rejects.toThrow(
+        RpcException,
+      );
     });
   });
 
@@ -316,7 +315,7 @@ describe('AuthController', () => {
   // ===========================================================
   describe('checkEmailAvailability', () => {
     it('should return availability result', async () => {
-      authService.checkEmailAvailability!.mockResolvedValue({
+      (authService.checkEmailAvailability as jest.Mock).mockResolvedValue({
         available: true,
       });
 
@@ -333,7 +332,7 @@ describe('AuthController', () => {
   // ===========================================================
   describe('linkUserToFarm', () => {
     it('should link user to farm and return success', async () => {
-      authService.linkUserToFarm!.mockResolvedValue(undefined);
+      (authService.linkUserToFarm as jest.Mock).mockResolvedValue(undefined);
 
       const result = await controller.linkUserToFarm({
         user_id: 'uid',
@@ -345,7 +344,7 @@ describe('AuthController', () => {
     });
 
     it('should accept both camelCase and snake_case params', async () => {
-      authService.linkUserToFarm!.mockResolvedValue(undefined);
+      (authService.linkUserToFarm as jest.Mock).mockResolvedValue(undefined);
 
       const result = await controller.linkUserToFarm({
         userId: 'uid',

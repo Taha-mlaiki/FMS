@@ -73,7 +73,7 @@ export class UsersController {
   }
 
   @GrpcMethod('UserService', 'HealthCheck')
-  async healthCheck() {
+  healthCheck() {
     return { status: 'OK', service: 'User Service' };
   }
 }

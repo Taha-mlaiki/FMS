@@ -1,12 +1,4 @@
-import {
-  Entity,
-  PrimaryColumn,
-  Column,
-  CreateDateColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
-
+import { Entity, PrimaryColumn, Column, CreateDateColumn } from 'typeorm';
 
 export enum InvitationStatus {
   PENDING = 'PENDING',
@@ -25,7 +17,6 @@ export class Invitation {
 
   @Column()
   farmId: string;
-
 
   @Column({ default: () => 'gen_random_uuid()' })
   token: string;
