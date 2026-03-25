@@ -15,9 +15,13 @@ export class ProductionController {
 
   @GrpcMethod('ProductionService', 'CreateGroup')
   async createGroup(data: any, metadata: Metadata) {
-    const farmId = (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
+    const farmId =
+      (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
     if (!farmId) {
-      throw new RpcException({ code: GrpcStatus.INVALID_ARGUMENT, message: 'farm_id is required' });
+      throw new RpcException({
+        code: GrpcStatus.INVALID_ARGUMENT,
+        message: 'farm_id is required',
+      });
     }
 
     try {
@@ -48,12 +52,24 @@ export class ProductionController {
   }
 
   @GrpcMethod('ProductionService', 'GetGroup')
-  async getGroup(data: { groupId?: string; group_id?: string; farmId?: string; farm_id?: string }, metadata: Metadata) {
-    const farmId = (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
+  async getGroup(
+    data: {
+      groupId?: string;
+      group_id?: string;
+      farmId?: string;
+      farm_id?: string;
+    },
+    metadata: Metadata,
+  ) {
+    const farmId =
+      (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
     const groupId = data.groupId ?? data.group_id;
 
     if (!farmId) {
-      throw new RpcException({ code: GrpcStatus.INVALID_ARGUMENT, message: 'farm_id is required' });
+      throw new RpcException({
+        code: GrpcStatus.INVALID_ARGUMENT,
+        message: 'farm_id is required',
+      });
     }
     if (!groupId) {
       throw new RpcException({
@@ -73,10 +89,14 @@ export class ProductionController {
 
   @GrpcMethod('ProductionService', 'UpdateGroup')
   async updateGroup(data: any, metadata: Metadata) {
-    const farmId = (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
+    const farmId =
+      (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
     const groupId = data.groupId ?? data.group_id;
     if (!farmId) {
-      throw new RpcException({ code: GrpcStatus.INVALID_ARGUMENT, message: 'farm_id is required' });
+      throw new RpcException({
+        code: GrpcStatus.INVALID_ARGUMENT,
+        message: 'farm_id is required',
+      });
     }
     if (!groupId) {
       throw new RpcException({
@@ -105,12 +125,19 @@ export class ProductionController {
   }
 
   @GrpcMethod('ProductionService', 'DeleteGroup')
-  async deleteGroup(data: { groupId: string; farmId?: string; farm_id?: string }, metadata: Metadata) {
-    const farmId = (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
+  async deleteGroup(
+    data: { groupId: string; farmId?: string; farm_id?: string },
+    metadata: Metadata,
+  ) {
+    const farmId =
+      (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
     const groupId = data.groupId ?? (data as any).group_id;
-    
+
     if (!farmId) {
-      throw new RpcException({ code: GrpcStatus.INVALID_ARGUMENT, message: 'farm_id is required' });
+      throw new RpcException({
+        code: GrpcStatus.INVALID_ARGUMENT,
+        message: 'farm_id is required',
+      });
     }
 
     await this.groupsService.delete(farmId, groupId);
@@ -119,9 +146,13 @@ export class ProductionController {
 
   @GrpcMethod('ProductionService', 'ListGroups')
   async listGroups(data: any, metadata: Metadata) {
-    const farmId = (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
+    const farmId =
+      (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
     if (!farmId) {
-      throw new RpcException({ code: GrpcStatus.INVALID_ARGUMENT, message: 'farm_id is required' });
+      throw new RpcException({
+        code: GrpcStatus.INVALID_ARGUMENT,
+        message: 'farm_id is required',
+      });
     }
 
     const page = Math.max(Number(data.page ?? 1), 1);
@@ -148,9 +179,13 @@ export class ProductionController {
 
   @GrpcMethod('ProductionService', 'CreateMetricType')
   async createMetricType(data: any, metadata: Metadata) {
-    const farmId = (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
+    const farmId =
+      (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
     if (!farmId) {
-      throw new RpcException({ code: GrpcStatus.INVALID_ARGUMENT, message: 'farm_id is required' });
+      throw new RpcException({
+        code: GrpcStatus.INVALID_ARGUMENT,
+        message: 'farm_id is required',
+      });
     }
 
     const type = await this.trackingService.createMetricType(farmId, {
@@ -161,10 +196,17 @@ export class ProductionController {
   }
 
   @GrpcMethod('ProductionService', 'ListMetricTypes')
-  async listMetricTypes(data: { farmId?: string; farm_id?: string; category?: string }, metadata: Metadata) {
-    const farmId = (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
+  async listMetricTypes(
+    data: { farmId?: string; farm_id?: string; category?: string },
+    metadata: Metadata,
+  ) {
+    const farmId =
+      (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
     if (!farmId) {
-      throw new RpcException({ code: GrpcStatus.INVALID_ARGUMENT, message: 'farm_id is required' });
+      throw new RpcException({
+        code: GrpcStatus.INVALID_ARGUMENT,
+        message: 'farm_id is required',
+      });
     }
 
     const types = await this.trackingService.listMetricTypes(farmId, {
@@ -175,11 +217,15 @@ export class ProductionController {
 
   @GrpcMethod('ProductionService', 'RecordMetrics')
   async recordMetrics(data: any, metadata: Metadata) {
-    const farmId = (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
-    const userId = (metadata.get('user-id')[0] as string);
-    
+    const farmId =
+      (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
+    const userId = metadata.get('user-id')[0] as string;
+
     if (!farmId) {
-      throw new RpcException({ code: GrpcStatus.INVALID_ARGUMENT, message: 'farm_id is required' });
+      throw new RpcException({
+        code: GrpcStatus.INVALID_ARGUMENT,
+        message: 'farm_id is required',
+      });
     }
 
     const count = await this.trackingService.recordMetrics(
@@ -194,9 +240,13 @@ export class ProductionController {
 
   @GrpcMethod('ProductionService', 'GetMetrics')
   async getMetrics(data: any, metadata: Metadata) {
-    const farmId = (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
+    const farmId =
+      (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
     if (!farmId) {
-      throw new RpcException({ code: GrpcStatus.INVALID_ARGUMENT, message: 'farm_id is required' });
+      throw new RpcException({
+        code: GrpcStatus.INVALID_ARGUMENT,
+        message: 'farm_id is required',
+      });
     }
 
     const records = await this.trackingService.getMetrics(
@@ -211,11 +261,15 @@ export class ProductionController {
 
   @GrpcMethod('ProductionService', 'RecordMortality')
   async recordMortality(data: any, metadata: Metadata) {
-    const farmId = (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
-    const userId = (metadata.get('user-id')[0] as string);
+    const farmId =
+      (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
+    const userId = metadata.get('user-id')[0] as string;
 
     if (!farmId) {
-      throw new RpcException({ code: GrpcStatus.INVALID_ARGUMENT, message: 'farm_id is required' });
+      throw new RpcException({
+        code: GrpcStatus.INVALID_ARGUMENT,
+        message: 'farm_id is required',
+      });
     }
 
     const record = await this.trackingService.recordMortality(farmId, {
@@ -227,9 +281,13 @@ export class ProductionController {
 
   @GrpcMethod('ProductionService', 'GetMortalityHistory')
   async getMortalityHistory(data: any, metadata: Metadata) {
-    const farmId = (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
+    const farmId =
+      (metadata.get('farm-id')[0] as string) || data.farmId || data.farm_id;
     if (!farmId) {
-      throw new RpcException({ code: GrpcStatus.INVALID_ARGUMENT, message: 'farm_id is required' });
+      throw new RpcException({
+        code: GrpcStatus.INVALID_ARGUMENT,
+        message: 'farm_id is required',
+      });
     }
 
     const records = await this.trackingService.getMortalityHistory(

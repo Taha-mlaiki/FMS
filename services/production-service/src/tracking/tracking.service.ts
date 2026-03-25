@@ -20,7 +20,7 @@ export class TrackingService {
     entity: any,
   ): Promise<Repository<T>> {
     const connection = await this.connectionManager.getTenantConnection(farmId);
-    return connection.getRepository(entity) as Repository<T>;
+    return connection.getRepository(entity);
   }
 
   // --- Metric Types ---
@@ -33,7 +33,10 @@ export class TrackingService {
     return repo.save(type);
   }
 
-  async listMetricTypes(farmId: string, filter: any): Promise<MetricTypeEntity[]> {
+  async listMetricTypes(
+    farmId: string,
+    filter: any,
+  ): Promise<MetricTypeEntity[]> {
     const repo = await this.getRepo<MetricTypeEntity>(farmId, MetricTypeEntity);
     return repo.find({ where: filter });
   }
@@ -46,7 +49,10 @@ export class TrackingService {
     recordedBy: string,
     taskId?: string,
   ): Promise<number> {
-    const repo = await this.getRepo<MetricRecordEntity>(farmId, MetricRecordEntity);
+    const repo = await this.getRepo<MetricRecordEntity>(
+      farmId,
+      MetricRecordEntity,
+    );
     let count = 0;
     for (const entry of entries) {
       const record = repo.create({
@@ -70,7 +76,10 @@ export class TrackingService {
     start?: string,
     end?: string,
   ): Promise<MetricRecordEntity[]> {
-    const repo = await this.getRepo<MetricRecordEntity>(farmId, MetricRecordEntity);
+    const repo = await this.getRepo<MetricRecordEntity>(
+      farmId,
+      MetricRecordEntity,
+    );
     const where: any = { groupId };
     if (typeId) where.metricTypeId = typeId;
     if (start && end)
@@ -83,8 +92,14 @@ export class TrackingService {
   }
 
   // --- Mortality ---
-  async recordMortality(farmId: string, data: any): Promise<MortalityRecordEntity> {
-    const repo = await this.getRepo<MortalityRecordEntity>(farmId, MortalityRecordEntity);
+  async recordMortality(
+    farmId: string,
+    data: any,
+  ): Promise<MortalityRecordEntity> {
+    const repo = await this.getRepo<MortalityRecordEntity>(
+      farmId,
+      MortalityRecordEntity,
+    );
     const record = repo.create({
       groupId: data.groupId,
       count: data.count,
@@ -108,7 +123,10 @@ export class TrackingService {
     start?: string,
     end?: string,
   ): Promise<MortalityRecordEntity[]> {
-    const repo = await this.getRepo<MortalityRecordEntity>(farmId, MortalityRecordEntity);
+    const repo = await this.getRepo<MortalityRecordEntity>(
+      farmId,
+      MortalityRecordEntity,
+    );
     const where: any = { groupId };
     if (start && end) where.date = Between(start, end);
 
