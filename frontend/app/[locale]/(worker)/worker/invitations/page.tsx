@@ -45,7 +45,8 @@ export default function InvitationsPage() {
     mutationFn: acceptInvitation,
     onSuccess: async (response) => {
       const farms = await listFarms().catch(() => []);
-      const acceptedFarmId = response?.farmId ?? response?.farm_id ?? null;
+      const res = response as { farmId?: string; farm_id?: string; role?: string } | undefined;
+      const acceptedFarmId = res?.farmId ?? res?.farm_id ?? null;
       const selectedFarm = farms.find((farm) => farm.id === acceptedFarmId);
 
       useAuthStore.getState().setFarms(
@@ -62,7 +63,7 @@ export default function InvitationsPage() {
       );
 
       if (acceptedFarmId) {
-        const resolvedRole = selectedFarm?.role ?? response?.role ?? 'WORKER';
+        const resolvedRole = selectedFarm?.role ?? res?.role ?? 'WORKER';
         useAuthStore.getState().setActiveFarm(acceptedFarmId, resolvedRole);
         usePreferencesStore.getState().setLastActiveFarmId(acceptedFarmId);
         setUserRoleCookie(resolvedRole);
