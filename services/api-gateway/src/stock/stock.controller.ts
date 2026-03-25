@@ -13,11 +13,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { firstValueFrom } from 'rxjs';
 import { JwtAuthGuard, AuthenticatedRequest } from '../guards/jwt-auth.guard';
 import { FarmAccessGuard } from '../guards/farm-access.guard';
@@ -44,14 +40,21 @@ export class StockController implements OnModuleInit {
   }
 
   private getFarmId(req: any): string {
-    return req.farmMembership?.farm?.id || req.farmMembership?.farmId || req.farmMembership?.farm_id;
+    return (
+      req.farmMembership?.farm?.id ||
+      req.farmMembership?.farmId ||
+      req.farmMembership?.farm_id
+    );
   }
 
   /**
    * Proto3 silently drops fields with default values (0, false, "").
    * This ensures every material has all fields so the frontend can render reliably.
    */
-  private normalizeMaterial(raw: any, farmId?: string): Record<string, unknown> {
+  private normalizeMaterial(
+    raw: any,
+    farmId?: string,
+  ): Record<string, unknown> {
     return {
       id: raw.id ?? '',
       name: raw.name ?? '',
@@ -68,9 +71,16 @@ export class StockController implements OnModuleInit {
 
   @Post('materials')
   @ApiOperation({ summary: 'Create a new stock material' })
-  async createMaterial(@Body() dto: CreateMaterialDto, @Req() req: AuthenticatedRequest) {
+  async createMaterial(
+    @Body() dto: CreateMaterialDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
     const farmId = this.getFarmId(req);
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     metadata.add('min-threshold', String(dto.min_threshold ?? 0));
     const result = await firstValueFrom(
       this.stockService.createMaterial(
@@ -90,9 +100,16 @@ export class StockController implements OnModuleInit {
 
   @Get('materials')
   @ApiOperation({ summary: 'List all stock materials for a farm' })
-  async listMaterials(@Query() query: ListMaterialsQueryDto, @Req() req: AuthenticatedRequest) {
+  async listMaterials(
+    @Query() query: ListMaterialsQueryDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
     const farmId = this.getFarmId(req);
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     const response = await firstValueFrom(
       this.stockService.listMaterials(
         {
@@ -115,10 +132,17 @@ export class StockController implements OnModuleInit {
   @ApiOperation({ summary: 'Get a single stock material' })
   async getMaterial(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
     const farmId = this.getFarmId(req);
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     metadata.add('material-id', id);
     const result = await firstValueFrom(
-      this.stockService.getMaterial({ material_id: id, farm_id: farmId }, metadata),
+      this.stockService.getMaterial(
+        { material_id: id, farm_id: farmId },
+        metadata,
+      ),
     );
     return this.normalizeMaterial(result, farmId);
   }
@@ -131,7 +155,11 @@ export class StockController implements OnModuleInit {
     @Req() req: AuthenticatedRequest,
   ) {
     const farmId = this.getFarmId(req);
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     metadata.add('material-id', id);
 
     // Pass min_threshold via metadata to bypass proto3 default-value dropping
@@ -158,20 +186,37 @@ export class StockController implements OnModuleInit {
 
   @Delete('materials/:id')
   @ApiOperation({ summary: 'Delete a stock material' })
-  async deleteMaterial(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+  async deleteMaterial(
+    @Param('id') id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
     const farmId = this.getFarmId(req);
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     metadata.add('material-id', id);
     return firstValueFrom(
-      this.stockService.deleteMaterial({ material_id: id, farm_id: farmId }, metadata),
+      this.stockService.deleteMaterial(
+        { material_id: id, farm_id: farmId },
+        metadata,
+      ),
     );
   }
 
   @Post('transactions')
   @ApiOperation({ summary: 'Create a stock transaction' })
-  async createTransaction(@Body() dto: CreateTransactionDto, @Req() req: AuthenticatedRequest) {
+  async createTransaction(
+    @Body() dto: CreateTransactionDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
     const farmId = this.getFarmId(req);
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     metadata.add('material-id', dto.material_id);
     return firstValueFrom(
       this.stockService.createTransaction(
@@ -195,7 +240,11 @@ export class StockController implements OnModuleInit {
     @Req() req: AuthenticatedRequest,
   ) {
     const farmId = this.getFarmId(req);
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     return firstValueFrom(
       this.stockService.listTransactions(
         {
@@ -212,17 +261,30 @@ export class StockController implements OnModuleInit {
   @ApiOperation({ summary: 'Get low stock alerts' })
   async getAlerts(@Req() req: AuthenticatedRequest) {
     const farmId = this.getFarmId(req);
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
-    return firstValueFrom(this.stockService.getLowStockAlerts({ farm_id: farmId }, metadata));
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
+    return firstValueFrom(
+      this.stockService.getLowStockAlerts({ farm_id: farmId }, metadata),
+    );
   }
 
   @Get('analytics')
   @ApiOperation({ summary: 'Get stock analytics' })
   async getAnalytics(@Query() query: any, @Req() req: AuthenticatedRequest) {
     const farmId = this.getFarmId(req);
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     return firstValueFrom(
-      this.stockService.getStockAnalytics({ ...query, farm_id: farmId }, metadata),
+      this.stockService.getStockAnalytics(
+        { ...query, farm_id: farmId },
+        metadata,
+      ),
     );
   }
 }

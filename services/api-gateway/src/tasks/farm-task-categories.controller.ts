@@ -22,9 +22,7 @@ import { TaskServiceClient } from './tasks.interface';
 export class FarmTaskCategoriesController implements OnModuleInit {
   private tasksService!: TaskServiceClient;
 
-  constructor(
-    @Inject('TASKS_SERVICE') private readonly client: ClientGrpc,
-  ) {}
+  constructor(@Inject('TASKS_SERVICE') private readonly client: ClientGrpc) {}
 
   onModuleInit() {
     this.tasksService =

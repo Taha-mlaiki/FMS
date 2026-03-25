@@ -47,7 +47,10 @@ export interface ProductionServiceClient {
   getMetrics(query: any, metadata?: any): Observable<{ records: any[] }>;
   createMetricType(data: any, metadata?: any): Observable<any>;
   updateMetricType(data: any, metadata?: any): Observable<any>;
-  listMetricTypes(query: any, metadata?: any): Observable<{ metric_types: any[] }>;
+  listMetricTypes(
+    query: any,
+    metadata?: any,
+  ): Observable<{ metric_types: any[] }>;
   deleteMetricType(
     data: any,
     metadata?: any,

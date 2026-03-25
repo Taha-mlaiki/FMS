@@ -35,7 +35,11 @@ export class FarmStockController implements OnModuleInit {
     @Param('farmId') farmId: string,
     @Req() req: AuthenticatedRequest,
   ) {
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     const response = await firstValueFrom(
       this.stockService.getLowStockAlerts({ farm_id: farmId }, metadata),
     );
@@ -48,7 +52,11 @@ export class FarmStockController implements OnModuleInit {
     @Param('farmId') farmId: string,
     @Req() req: AuthenticatedRequest,
   ) {
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     const response = await firstValueFrom(
       this.stockService.getLowStockAlerts({ farm_id: farmId }, metadata),
     );

@@ -1,13 +1,19 @@
 import { IsString, IsOptional, IsDateString } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class StockAnalyticsQueryDto {
-  @ApiPropertyOptional({ example: 'farm-123', description: 'Filter by farm ID' })
+  @ApiPropertyOptional({
+    example: 'farm-123',
+    description: 'Filter by farm ID',
+  })
   @IsString()
   @IsOptional()
   farmId?: string;
 
-  @ApiPropertyOptional({ example: 'farm-123', description: 'Filter by farm ID (legacy)' })
+  @ApiPropertyOptional({
+    example: 'farm-123',
+    description: 'Filter by farm ID (legacy)',
+  })
   @IsString()
   @IsOptional()
   farm_id?: string;

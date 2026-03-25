@@ -5,21 +5,30 @@ import {
   Min,
   IsDateString,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export class ListTransactionsQueryDto {
-  @ApiPropertyOptional({ example: 'farm-123', description: 'Filter by farm ID' })
+  @ApiPropertyOptional({
+    example: 'farm-123',
+    description: 'Filter by farm ID',
+  })
   @IsString()
   @IsOptional()
   farmId?: string;
 
-  @ApiPropertyOptional({ example: 'farm-123', description: 'Filter by farm ID (legacy)' })
+  @ApiPropertyOptional({
+    example: 'farm-123',
+    description: 'Filter by farm ID (legacy)',
+  })
   @IsString()
   @IsOptional()
   farm_id?: string;
 
-  @ApiPropertyOptional({ example: 'mat-123', description: 'Filter by material ID' })
+  @ApiPropertyOptional({
+    example: 'mat-123',
+    description: 'Filter by material ID',
+  })
   @IsString()
   @IsOptional()
   materialId?: string;
@@ -38,22 +47,34 @@ export class ListTransactionsQueryDto {
   @IsOptional()
   type?: string;
 
-  @ApiPropertyOptional({ example: '2026-01-01', description: 'Start date filter' })
+  @ApiPropertyOptional({
+    example: '2026-01-01',
+    description: 'Start date filter',
+  })
   @IsDateString()
   @IsOptional()
   startDate?: string;
 
-  @ApiPropertyOptional({ example: '2026-01-01', description: 'Start date filter (legacy)' })
+  @ApiPropertyOptional({
+    example: '2026-01-01',
+    description: 'Start date filter (legacy)',
+  })
   @IsDateString()
   @IsOptional()
   start_date?: string;
 
-  @ApiPropertyOptional({ example: '2026-03-01', description: 'End date filter' })
+  @ApiPropertyOptional({
+    example: '2026-03-01',
+    description: 'End date filter',
+  })
   @IsDateString()
   @IsOptional()
   endDate?: string;
 
-  @ApiPropertyOptional({ example: '2026-03-01', description: 'End date filter (legacy)' })
+  @ApiPropertyOptional({
+    example: '2026-03-01',
+    description: 'End date filter (legacy)',
+  })
   @IsDateString()
   @IsOptional()
   end_date?: string;

@@ -1,4 +1,9 @@
-import { IsString, IsOptional, IsDateString, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsDateString,
+  IsNotEmpty,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class GetMetricsQueryDto {
@@ -7,7 +12,10 @@ export class GetMetricsQueryDto {
   @IsNotEmpty()
   farmId: string;
 
-  @ApiPropertyOptional({ example: 'farm-123', description: 'Filter by farm ID (legacy)' })
+  @ApiPropertyOptional({
+    example: 'farm-123',
+    description: 'Filter by farm ID (legacy)',
+  })
   @IsString()
   @IsOptional()
   farm_id?: string;
