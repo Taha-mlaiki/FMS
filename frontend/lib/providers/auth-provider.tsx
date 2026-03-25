@@ -20,11 +20,11 @@ async function waitForAuthStoreHydration() {
   if (!persisted?.hasHydrated || persisted.hasHydrated()) return;
 
   await new Promise<void>((resolve) => {
-    let unsubscribe: (() => void) | undefined;
-    unsubscribe = persisted.onFinishHydration?.(() => {
-      unsubscribe?.();
-      resolve();
-    });
+    const unsubscribe: (() => void) | undefined =
+      persisted.onFinishHydration?.(() => {
+        unsubscribe?.();
+        resolve();
+      });
   });
 }
 
