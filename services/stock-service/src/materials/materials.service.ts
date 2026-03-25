@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { status as GrpcStatus } from '@grpc/grpc-js';
-import { Repository, ObjectLiteral } from 'typeorm';
+import { Repository } from 'typeorm';
 import { MaterialEntity } from './entities/material.entity';
 import { TenantConnectionManager } from '@shared/database/tenant-connection.manager';
 
@@ -11,12 +11,17 @@ export class MaterialsService {
 
   constructor(private readonly tenantManager: TenantConnectionManager) {}
 
-  private async getRepository(farmId: string): Promise<Repository<MaterialEntity>> {
+  private async getRepository(
+    farmId: string,
+  ): Promise<Repository<MaterialEntity>> {
     const connection = await this.tenantManager.getTenantConnection(farmId);
     return connection.getRepository(MaterialEntity);
   }
 
-  async create(farmId: string, data: Partial<MaterialEntity>): Promise<MaterialEntity> {
+  async create(
+    farmId: string,
+    data: Partial<MaterialEntity>,
+  ): Promise<MaterialEntity> {
     const repo = await this.getRepository(farmId);
     const material = repo.create(data);
     return repo.save(material);
@@ -70,7 +75,11 @@ export class MaterialsService {
     return query.getManyAndCount();
   }
 
-  async updateQuantity(farmId: string, id: string, delta: number): Promise<MaterialEntity> {
+  async updateQuantity(
+    farmId: string,
+    id: string,
+    delta: number,
+  ): Promise<MaterialEntity> {
     const material = await this.findById(farmId, id);
     if (!material) {
       throw new RpcException({

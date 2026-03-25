@@ -104,7 +104,7 @@ export class ProductionController implements OnModuleInit {
     @Body() dto: CreateGroupDto,
     @Req() req: AuthenticatedRequest,
   ) {
-    const farmId = req.farmMembership!.farm!.id!;
+    const farmId = req.farmMembership!.farm!.id;
     const dtoRecord = dto as unknown as Record<string, unknown>;
 
     const arrivalDate =
@@ -160,7 +160,7 @@ export class ProductionController implements OnModuleInit {
     @Query('farmId') farmId: string,
     @Req() req: AuthenticatedRequest,
   ) {
-    const finalFarmId = req.farmMembership!.farm!.id!;
+    const finalFarmId = req.farmMembership!.farm!.id;
     const metadata = createGrpcMetadata(
       req.user,
       finalFarmId,
@@ -193,7 +193,7 @@ export class ProductionController implements OnModuleInit {
     @Query() query: ListGroupsQueryDto,
     @Req() req: AuthenticatedRequest,
   ) {
-    const farmId = req.farmMembership!.farm!.id!;
+    const farmId = req.farmMembership!.farm!.id;
     const metadata = createGrpcMetadata(
       req.user,
       farmId,
@@ -251,9 +251,9 @@ export class ProductionController implements OnModuleInit {
     @Param('id') id: string,
     @Body() dto: UpdateGroupDto,
     @Req() req: AuthenticatedRequest,
-    @Query('farmId') farmId?: string,
+    @Query('farmId') _farmId?: string,
   ) {
-    const finalFarmId = req.farmMembership!.farm!.id!;
+    const finalFarmId = req.farmMembership!.farm!.id;
 
     if (req.farmMembership?.role === 'WORKER') {
       throw new BadRequestException('Only farm owners can update this group');
@@ -317,7 +317,7 @@ export class ProductionController implements OnModuleInit {
     @Query('farmId') farmId: string,
     @Req() req: AuthenticatedRequest,
   ) {
-    const finalFarmId = req.farmMembership!.farm!.id!;
+    const finalFarmId = req.farmMembership!.farm!.id;
     const metadata = createGrpcMetadata(
       req.user,
       finalFarmId,
@@ -347,7 +347,7 @@ export class ProductionController implements OnModuleInit {
     @Body() dto: RecordMetricsDto,
     @Req() req: AuthenticatedRequest,
   ) {
-    const farmId = req.farmMembership!.farm!.id!;
+    const farmId = req.farmMembership!.farm!.id;
     const metadata = createGrpcMetadata(
       req.user,
       farmId,
@@ -377,7 +377,7 @@ export class ProductionController implements OnModuleInit {
     @Query() query: GetMetricsQueryDto,
     @Req() req: AuthenticatedRequest,
   ) {
-    const farmId = req.farmMembership!.farm!.id!;
+    const farmId = req.farmMembership!.farm!.id;
     const metadata = createGrpcMetadata(
       req.user,
       farmId,
@@ -408,7 +408,7 @@ export class ProductionController implements OnModuleInit {
     @Query() query: ListWorkersQueryDto,
     @Req() req: AuthenticatedRequest,
   ) {
-    const farmId = req.farmMembership!.farm!.id!;
+    const farmId = req.farmMembership!.farm!.id;
     const userId = req.user.sub;
     const queryRecord = query as unknown as Record<string, unknown>;
     const limit = this.toOptionalNumber(queryRecord.limit) ?? 10;

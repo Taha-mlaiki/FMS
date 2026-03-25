@@ -1,13 +1,25 @@
-import { IsString, IsNotEmpty, IsNumber, IsPositive, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsPositive,
+  IsOptional,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateMaterialDto {
-  @ApiProperty({ example: 'NPK Fertilizer', description: 'Name of the material' })
+  @ApiProperty({
+    example: 'NPK Fertilizer',
+    description: 'Name of the material',
+  })
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ example: 'feed', description: 'Category: feed, vaccine, medicine, equipment, other' })
+  @ApiProperty({
+    example: 'feed',
+    description: 'Category: feed, vaccine, medicine, equipment, other',
+  })
   @IsString()
   @IsNotEmpty()
   category: string;
@@ -17,12 +29,18 @@ export class CreateMaterialDto {
   @IsPositive()
   quantity: number;
 
-  @ApiProperty({ example: 'kg', description: 'Unit of measurement: kg, litre, piece, dose' })
+  @ApiProperty({
+    example: 'kg',
+    description: 'Unit of measurement: kg, litre, piece, dose',
+  })
   @IsString()
   @IsNotEmpty()
   unit: string;
 
-  @ApiPropertyOptional({ example: 20, description: 'Minimum quantity before low-stock alert' })
+  @ApiPropertyOptional({
+    example: 20,
+    description: 'Minimum quantity before low-stock alert',
+  })
   @IsNumber()
   @IsOptional()
   min_threshold?: number;

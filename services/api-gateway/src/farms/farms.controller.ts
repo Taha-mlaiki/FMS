@@ -155,7 +155,11 @@ export class FarmsController {
     @Req() req: AuthenticatedRequest,
   ) {
     await this.farmAccessService.assertMembership(req.user.sub, farmId);
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     const farm = await this.farmsService.getFarm(farmId, metadata);
     return normalizeFarmPayload(farm as unknown as FarmPayload);
   }
@@ -179,7 +183,11 @@ export class FarmsController {
       throw new ForbiddenException('Only managers can update farm settings');
     }
 
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     const updatedFarm = await this.farmsService.updateFarm(
       farmId,
       {

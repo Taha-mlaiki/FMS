@@ -16,12 +16,15 @@ export interface FarmInfo {
 interface FarmGrpcService {
   createFarm(data: CreateFarmDto, metadata?: any): Observable<FarmInfo>;
   getFarm(data: { farmId: string }, metadata?: any): Observable<FarmInfo>;
-  updateFarm(data: {
-    farmId: string;
-    name?: string;
-    address?: string;
-    type?: string;
-  }, metadata?: any): Observable<FarmInfo>;
+  updateFarm(
+    data: {
+      farmId: string;
+      name?: string;
+      address?: string;
+      type?: string;
+    },
+    metadata?: any,
+  ): Observable<FarmInfo>;
 }
 
 @Injectable()

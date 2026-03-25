@@ -41,16 +41,23 @@ export class FarmMetricTypesController implements OnModuleInit {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
 
     return firstValueFrom(
-      this.productionService.listMetricTypes({
-        farm_id: farmId,
-        farmId,
-        category,
-        page: page ? Number(page) : undefined,
-        limit: limit ? Number(limit) : undefined,
-      }, metadata),
+      this.productionService.listMetricTypes(
+        {
+          farm_id: farmId,
+          farmId,
+          category,
+          page: page ? Number(page) : undefined,
+          limit: limit ? Number(limit) : undefined,
+        },
+        metadata,
+      ),
     );
   }
 
@@ -60,14 +67,21 @@ export class FarmMetricTypesController implements OnModuleInit {
     @Req() req: AuthenticatedRequest,
     @Body() body: Record<string, unknown>,
   ) {
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
 
     return firstValueFrom(
-      this.productionService.createMetricType({
-        farm_id: farmId,
-        farmId,
-        ...body,
-      }, metadata),
+      this.productionService.createMetricType(
+        {
+          farm_id: farmId,
+          farmId,
+          ...body,
+        },
+        metadata,
+      ),
     );
   }
 
@@ -78,16 +92,23 @@ export class FarmMetricTypesController implements OnModuleInit {
     @Req() req: AuthenticatedRequest,
     @Body() body: Record<string, unknown>,
   ) {
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
 
     return firstValueFrom(
-      this.productionService.updateMetricType({
-        metric_type_id: id,
-        metricTypeId: id,
-        farm_id: farmId,
-        farmId,
-        ...body,
-      }, metadata),
+      this.productionService.updateMetricType(
+        {
+          metric_type_id: id,
+          metricTypeId: id,
+          farm_id: farmId,
+          farmId,
+          ...body,
+        },
+        metadata,
+      ),
     );
   }
 
@@ -97,15 +118,22 @@ export class FarmMetricTypesController implements OnModuleInit {
     @Param('id') id: string,
     @Req() req: AuthenticatedRequest,
   ) {
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
 
     return firstValueFrom(
-      this.productionService.deleteMetricType({
-        metric_type_id: id,
-        metricTypeId: id,
-        farm_id: farmId,
-        farmId,
-      }, metadata),
+      this.productionService.deleteMetricType(
+        {
+          metric_type_id: id,
+          metricTypeId: id,
+          farm_id: farmId,
+          farmId,
+        },
+        metadata,
+      ),
     );
   }
 }

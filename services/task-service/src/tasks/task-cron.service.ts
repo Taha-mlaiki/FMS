@@ -18,7 +18,7 @@ export class TaskCronService {
     try {
       const farms = await this.tenantManager.getAllTenantSchemas();
       this.logger.log(`Found ${farms.length} active farm schemas to process.`);
-      
+
       for (const farmId of farms) {
         await this.taskGenerator.generateTasksForFarm(farmId, 0);
       }

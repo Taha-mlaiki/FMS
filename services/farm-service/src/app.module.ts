@@ -27,4 +27,4 @@ import { FarmsModule } from './farms/farms.module';
     FarmsModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

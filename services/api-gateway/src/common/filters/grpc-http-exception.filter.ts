@@ -95,10 +95,7 @@ export class GrpcHttpExceptionFilter implements ExceptionFilter {
     });
   }
 
-  private tryTranslate(
-    key: string,
-    i18n: I18nContext | undefined,
-  ): string {
+  private tryTranslate(key: string, i18n: I18nContext | undefined): string {
     if (!i18n) return key;
 
     // Only attempt translation if the key looks like an i18n key (e.g. "auth.invalid_credentials")
@@ -154,4 +151,3 @@ export class GrpcHttpExceptionFilter implements ExceptionFilter {
     return message.replace(/^\d+\s+[A-Z_]+:\s*/i, '').trim();
   }
 }
-

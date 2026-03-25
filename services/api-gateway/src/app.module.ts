@@ -26,10 +26,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
         path: path.join(__dirname, '/i18n/'),
         watch: true,
       },
-      resolvers: [
-        new HeaderResolver(['x-lang']),
-        AcceptLanguageResolver,
-      ],
+      resolvers: [new HeaderResolver(['x-lang']), AcceptLanguageResolver],
     }),
     AuthModule,
     TasksModule,

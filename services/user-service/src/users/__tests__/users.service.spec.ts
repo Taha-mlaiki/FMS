@@ -285,9 +285,9 @@ describe('UsersService', () => {
     it('should clear refresh token on password change', async () => {
       repository.findOne.mockResolvedValue({ ...mockUser });
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      repository.save.mockImplementation(async (user) => {
-        expect(user.currentHashedRefreshToken).toBeNull();
-        return user;
+      repository.save.mockImplementation((user: Record<string, unknown>) => {
+        expect(user['currentHashedRefreshToken']).toBeNull();
+        return Promise.resolve(user);
       });
 
       await service.changePassword('user-uuid-1', 'oldPass', 'newPass');

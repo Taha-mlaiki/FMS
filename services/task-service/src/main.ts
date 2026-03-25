@@ -20,4 +20,4 @@ async function bootstrap() {
   console.log('📋 task-service (gRPC) listening on port 50053');
 }
 
-bootstrap();
+void bootstrap();

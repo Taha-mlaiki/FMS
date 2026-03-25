@@ -18,7 +18,9 @@ export class TransactionsService {
     private readonly materialsService: MaterialsService,
   ) {}
 
-  private async getRepository(farmId: string): Promise<Repository<TransactionEntity>> {
+  private async getRepository(
+    farmId: string,
+  ): Promise<Repository<TransactionEntity>> {
     const connection = await this.tenantManager.getTenantConnection(farmId);
     return connection.getRepository(TransactionEntity);
   }
@@ -80,7 +82,11 @@ export class TransactionsService {
     return savedTransaction;
   }
 
-  async update(farmId: string, id: string, data: any): Promise<TransactionEntity> {
+  async update(
+    farmId: string,
+    id: string,
+    data: any,
+  ): Promise<TransactionEntity> {
     const repo = await this.getRepository(farmId);
     const transaction = await repo.findOne({ where: { id } });
     if (!transaction) {
@@ -106,7 +112,10 @@ export class TransactionsService {
     return repo.save(transaction);
   }
 
-  async list(farmId: string, filter: any): Promise<[TransactionEntity[], number]> {
+  async list(
+    farmId: string,
+    filter: any,
+  ): Promise<[TransactionEntity[], number]> {
     const repo = await this.getRepository(farmId);
     const where: any = {};
     const matId = filter.materialId || filter.material_id;
@@ -120,10 +129,7 @@ export class TransactionsService {
     const startDate = filter.startDate || filter.start_date;
     const endDate = filter.endDate || filter.end_date;
     if (startDate && endDate) {
-      where.createdAt = Between(
-        new Date(startDate),
-        new Date(endDate),
-      );
+      where.createdAt = Between(new Date(startDate), new Date(endDate));
     }
 
     const skip = ((filter.page || 1) - 1) * (filter.limit || 10);

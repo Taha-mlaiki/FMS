@@ -80,24 +80,37 @@ export class TasksService {
 
   async createTaskTemplate(data: Partial<TaskTemplate>): Promise<TaskTemplate> {
     if (!data.farmId) throw new Error('farmId is required');
-    const repo = await this.getRepository<TaskTemplate>(data.farmId, TaskTemplate);
+    const repo = await this.getRepository<TaskTemplate>(
+      data.farmId,
+      TaskTemplate,
+    );
     const template = repo.create(data);
     const saved = await repo.save(template);
 
     // Trigger async generation for the new template (today only)
     this.taskGenerator.generateTasksForFarm(data.farmId, 0).catch((e) => {
-      this.logger.error('Failed to generate tasks securely from created template:', e);
+      this.logger.error(
+        'Failed to generate tasks securely from created template:',
+        e,
+      );
     });
 
     return saved;
   }
 
-  async findTemplateById(id: string, farmId: string): Promise<TaskTemplate | null> {
+  async findTemplateById(
+    id: string,
+    farmId: string,
+  ): Promise<TaskTemplate | null> {
     const repo = await this.getRepository<TaskTemplate>(farmId, TaskTemplate);
     return repo.findOneBy({ id });
   }
 
-  async updateTemplate(id: string, farmId: string, data: Partial<TaskTemplate>): Promise<TaskTemplate> {
+  async updateTemplate(
+    id: string,
+    farmId: string,
+    data: Partial<TaskTemplate>,
+  ): Promise<TaskTemplate> {
     const repo = await this.getRepository<TaskTemplate>(farmId, TaskTemplate);
     await repo.update(id, data);
     const updated = await this.findTemplateById(id, farmId);
@@ -105,7 +118,10 @@ export class TasksService {
 
     // Trigger async generation against the patched template (today only)
     this.taskGenerator.generateTasksForFarm(farmId, 0).catch((e) => {
-      this.logger.error('Failed to generate tasks securely from updated template:', e);
+      this.logger.error(
+        'Failed to generate tasks securely from updated template:',
+        e,
+      );
     });
 
     return updated;
@@ -117,14 +133,21 @@ export class TasksService {
   }
 
   async listTemplates(filter: TaskTemplateListFilter): Promise<TaskTemplate[]> {
-    const repo = await this.getRepository<TaskTemplate>(filter.farmId, TaskTemplate);
+    const repo = await this.getRepository<TaskTemplate>(
+      filter.farmId,
+      TaskTemplate,
+    );
     const qb = repo.createQueryBuilder('template');
 
     if (filter.categoryId) {
-      qb.andWhere('template.categoryId = :categoryId', { categoryId: filter.categoryId });
+      qb.andWhere('template.categoryId = :categoryId', {
+        categoryId: filter.categoryId,
+      });
     }
     if (filter.priority) {
-      qb.andWhere('template.priority = :priority', { priority: filter.priority });
+      qb.andWhere('template.priority = :priority', {
+        priority: filter.priority,
+      });
     }
     if (filter.isActive !== undefined && filter.isActive !== '') {
       const active = filter.isActive === true || filter.isActive === 'true';
@@ -208,7 +231,9 @@ export class TasksService {
     }
 
     if (filter.templateId) {
-      qb.andWhere('task.templateId = :templateId', { templateId: filter.templateId });
+      qb.andWhere('task.templateId = :templateId', {
+        templateId: filter.templateId,
+      });
     }
 
     // Date range filter

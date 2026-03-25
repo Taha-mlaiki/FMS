@@ -36,8 +36,12 @@ export class FarmTaskTemplatesController implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    this.tasksService = this.tasksClient.getService<TaskServiceClient>('TaskService');
-    this.productionService = this.productionClient.getService<ProductionServiceClient>('ProductionService');
+    this.tasksService =
+      this.tasksClient.getService<TaskServiceClient>('TaskService');
+    this.productionService =
+      this.productionClient.getService<ProductionServiceClient>(
+        'ProductionService',
+      );
   }
 
   @Post()
@@ -47,7 +51,11 @@ export class FarmTaskTemplatesController implements OnModuleInit {
     @Body() body: any,
   ) {
     console.log('[DEBUG_API_GATEWAY_TEMPLATE_BODY]:', body);
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     const template = await firstValueFrom(
       this.tasksService.createTaskTemplate(
         {
@@ -63,7 +71,12 @@ export class FarmTaskTemplatesController implements OnModuleInit {
       ),
     );
 
-    const enriched = await this.enrichTemplates(farmId, req.user.sub, [template], metadata);
+    const enriched = await this.enrichTemplates(
+      farmId,
+      req.user.sub,
+      [template],
+      metadata,
+    );
     return enriched[0];
   }
 
@@ -73,7 +86,11 @@ export class FarmTaskTemplatesController implements OnModuleInit {
     @Req() req: AuthenticatedRequest,
     @Query() query: any,
   ) {
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     const response = await firstValueFrom(
       this.tasksService.listTaskTemplates(
         {
@@ -103,7 +120,11 @@ export class FarmTaskTemplatesController implements OnModuleInit {
     @Param('id') id: string,
     @Req() req: AuthenticatedRequest,
   ) {
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     const template = await firstValueFrom(
       this.tasksService.getTaskTemplate(
         {
@@ -114,7 +135,12 @@ export class FarmTaskTemplatesController implements OnModuleInit {
       ),
     );
 
-    const enriched = await this.enrichTemplates(farmId, req.user.sub, [template], metadata);
+    const enriched = await this.enrichTemplates(
+      farmId,
+      req.user.sub,
+      [template],
+      metadata,
+    );
     return enriched[0];
   }
 
@@ -125,7 +151,11 @@ export class FarmTaskTemplatesController implements OnModuleInit {
     @Req() req: AuthenticatedRequest,
     @Body() body: any,
   ) {
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
     const template = await firstValueFrom(
       this.tasksService.updateTaskTemplate(
         {
@@ -139,12 +169,17 @@ export class FarmTaskTemplatesController implements OnModuleInit {
           time_of_day: body.timeOfDay || body.time_of_day || null,
           worker_ids: body.workerIds || body.worker_ids,
           group_ids: body.groupIds || body.group_ids,
-        } as any,
+        },
         metadata,
       ),
     );
 
-    const enriched = await this.enrichTemplates(farmId, req.user.sub, [template], metadata);
+    const enriched = await this.enrichTemplates(
+      farmId,
+      req.user.sub,
+      [template],
+      metadata,
+    );
     return enriched[0];
   }
 
@@ -167,7 +202,12 @@ export class FarmTaskTemplatesController implements OnModuleInit {
     );
   }
 
-  private async enrichTemplates(farmId: string, userId: string, templates: any[], metadata: any) {
+  private async enrichTemplates(
+    farmId: string,
+    userId: string,
+    templates: any[],
+    metadata: any,
+  ) {
     if (!templates || templates.length === 0) return templates;
 
     try {
@@ -177,20 +217,27 @@ export class FarmTaskTemplatesController implements OnModuleInit {
       ]);
 
       const memberMap = new Map();
-      (membersResp.members || []).forEach(m => {
-        const name = `${m.firstName || ''} ${m.lastName || ''}`.trim() || m.email || m.userId;
+      (membersResp.members || []).forEach((m) => {
+        const name =
+          `${m.firstName || ''} ${m.lastName || ''}`.trim() ||
+          m.email ||
+          m.userId;
         memberMap.set(m.userId, { id: m.userId, name });
       });
 
       const groupMap = new Map();
-      (groupsResp.groups || []).forEach(g => {
+      (groupsResp.groups || []).forEach((g) => {
         groupMap.set(g.id, { id: g.id, name: g.name });
       });
 
-      return templates.map(tmpl => ({
+      return templates.map((tmpl) => ({
         ...tmpl,
-        workers: (tmpl.worker_ids || tmpl.workerIds || []).map(id => memberMap.get(id) || { id, name: 'Unknown Worker' }),
-        groups: (tmpl.group_ids || tmpl.groupIds || []).map(id => groupMap.get(id) || { id, name: 'Unknown Group' }),
+        workers: (tmpl.worker_ids || tmpl.workerIds || []).map(
+          (id) => memberMap.get(id) || { id, name: 'Unknown Worker' },
+        ),
+        groups: (tmpl.group_ids || tmpl.groupIds || []).map(
+          (id) => groupMap.get(id) || { id, name: 'Unknown Group' },
+        ),
       }));
     } catch (error) {
       this.logger.error(`Failed to enrich templates: ${error.message}`);

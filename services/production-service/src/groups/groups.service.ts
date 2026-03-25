@@ -7,16 +7,19 @@ import { TenantConnectionManager } from '@shared/database';
 export class GroupsService {
   private readonly logger = new Logger(GroupsService.name);
 
-  constructor(
-    private readonly connectionManager: TenantConnectionManager,
-  ) {}
+  constructor(private readonly connectionManager: TenantConnectionManager) {}
 
-  private async getRepository(farmId: string): Promise<Repository<AnimalGroup>> {
+  private async getRepository(
+    farmId: string,
+  ): Promise<Repository<AnimalGroup>> {
     const connection = await this.connectionManager.getTenantConnection(farmId);
     return connection.getRepository(AnimalGroup);
   }
 
-  async create(farmId: string, data: Partial<AnimalGroup>): Promise<AnimalGroup> {
+  async create(
+    farmId: string,
+    data: Partial<AnimalGroup>,
+  ): Promise<AnimalGroup> {
     const repo = await this.getRepository(farmId);
     const group = repo.create(data);
     return repo.save(group);
@@ -27,10 +30,15 @@ export class GroupsService {
     return repo.findOneBy({ id });
   }
 
-  async update(farmId: string, id: string, data: Partial<AnimalGroup>): Promise<AnimalGroup> {
+  async update(
+    farmId: string,
+    id: string,
+    data: Partial<AnimalGroup>,
+  ): Promise<AnimalGroup> {
     const repo = await this.getRepository(farmId);
     const result = await repo.update(id, data);
-    if (!result.affected) throw new NotFoundException('production.group_not_found');
+    if (!result.affected)
+      throw new NotFoundException('production.group_not_found');
 
     const updated = await this.findById(farmId, id);
     if (!updated) throw new NotFoundException('production.group_not_found');
@@ -40,7 +48,8 @@ export class GroupsService {
   async delete(farmId: string, id: string): Promise<void> {
     const repo = await this.getRepository(farmId);
     const result = await repo.delete(id);
-    if (!result.affected) throw new NotFoundException('production.group_not_found');
+    if (!result.affected)
+      throw new NotFoundException('production.group_not_found');
   }
 
   async list(
@@ -63,7 +72,11 @@ export class GroupsService {
     });
   }
 
-  async updateQuantity(farmId: string, id: string, delta: number): Promise<void> {
+  async updateQuantity(
+    farmId: string,
+    id: string,
+    delta: number,
+  ): Promise<void> {
     const repo = await this.getRepository(farmId);
     const group = await this.findById(farmId, id);
     if (!group) throw new NotFoundException('production.group_not_found');

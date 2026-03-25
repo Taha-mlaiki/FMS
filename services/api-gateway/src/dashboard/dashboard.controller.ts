@@ -143,7 +143,11 @@ export class DashboardController implements OnModuleInit {
     metadata?: any,
   ): Promise<number> {
     const farmIdFromQuery = this.getStringAlias(query, 'farmId', 'farm_id');
-    const workerIdFromQuery = this.getStringAlias(query, 'workerId', 'worker_id');
+    const workerIdFromQuery = this.getStringAlias(
+      query,
+      'workerId',
+      'worker_id',
+    );
 
     const firstPageRaw = await firstValueFrom(
       this.tasksService.listTasks(
@@ -371,9 +375,30 @@ export class DashboardController implements OnModuleInit {
         metadata,
       ),
       this.countAllReportsByUser(farmId, userId, metadata),
-      this.countTasks({ farmId, farm_id: farmId, workerId: userId, worker_id: userId, status: 'completed' }, metadata),
-      this.countTasks({ farmId, farm_id: farmId, workerId: userId, worker_id: userId, status: 'skipped' }, metadata),
-      this.countTasks({ farmId, farm_id: farmId, workerId: userId, worker_id: userId }, metadata),
+      this.countTasks(
+        {
+          farmId,
+          farm_id: farmId,
+          workerId: userId,
+          worker_id: userId,
+          status: 'completed',
+        },
+        metadata,
+      ),
+      this.countTasks(
+        {
+          farmId,
+          farm_id: farmId,
+          workerId: userId,
+          worker_id: userId,
+          status: 'skipped',
+        },
+        metadata,
+      ),
+      this.countTasks(
+        { farmId, farm_id: farmId, workerId: userId, worker_id: userId },
+        metadata,
+      ),
       this.authService.listUserFarms(userId, { suppressErrors: true }),
     ]);
 
@@ -402,7 +427,14 @@ export class DashboardController implements OnModuleInit {
       req.farmMembership?.role,
     );
 
-    const [occurrences, reports, alertsResponse, membersRaw, templatesRaw, absoluteTasksResp] = await Promise.all([
+    const [
+      occurrences,
+      reports,
+      alertsResponse,
+      membersRaw,
+      templatesRaw,
+      absoluteTasksResp,
+    ] = await Promise.all([
       this.listAllTasks(
         {
           farm_id: farmId,
@@ -425,9 +457,21 @@ export class DashboardController implements OnModuleInit {
       )
         .then((result) => result as StockAlertsResponse)
         .catch(() => ({ alerts: [] as unknown[] })),
-      this.authService.listFarmMembers(farmId, req.user.sub, { limit: 1 }).catch(() => ({ total: 0 })),
-      firstValueFrom(this.tasksService.listTaskTemplates({ farmId, farm_id: farmId, isActive: true }, metadata)).catch(() => ({ templates: [] })),
-      firstValueFrom(this.tasksService.listTasks({ farmId, farm_id: farmId, limit: 1 }, metadata)).catch(() => ({ total: 0 })),
+      this.authService
+        .listFarmMembers(farmId, req.user.sub, { limit: 1 })
+        .catch(() => ({ total: 0 })),
+      firstValueFrom(
+        this.tasksService.listTaskTemplates(
+          { farmId, farm_id: farmId, isActive: true },
+          metadata,
+        ),
+      ).catch(() => ({ templates: [] })),
+      firstValueFrom(
+        this.tasksService.listTasks(
+          { farmId, farm_id: farmId, limit: 1 },
+          metadata,
+        ),
+      ).catch(() => ({ total: 0 })),
     ]);
 
     const todo = occurrences.filter((item) => item.status === 'todo').length;

@@ -99,7 +99,7 @@ export class ReportsService {
     farmId: string,
     id: string,
     reviewerId: string,
-    notes: string,
+    _notes: string,
   ): Promise<ReportEntity> {
     return this.update(farmId, id, {
       updatedAt: new Date(),
@@ -111,7 +111,7 @@ export class ReportsService {
     farmId: string,
     id: string,
     resolverId: string,
-    notes: string,
+    _notes: string,
   ): Promise<ReportEntity> {
     return this.update(farmId, id, {
       updatedAt: new Date(),
@@ -133,8 +133,6 @@ export class ReportsService {
     });
 
     const total = reports.length;
-    const resolved = 0; // Updated to reflect new logic
-    const open = total; // Updated to reflect new logic
 
     const byType: Record<string, number> = {};
     const bySeverity: Record<string, number> = {};

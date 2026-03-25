@@ -60,7 +60,11 @@ export class FarmProductionController implements OnModuleInit {
       start.setFullYear(now.getFullYear() - 1);
     }
 
-    const metadata = createGrpcMetadata(req.user, farmId, req.farmMembership?.role);
+    const metadata = createGrpcMetadata(
+      req.user,
+      farmId,
+      req.farmMembership?.role,
+    );
 
     const response = await firstValueFrom(
       this.productionService.getMetrics(

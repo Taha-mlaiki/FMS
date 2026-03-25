@@ -231,7 +231,7 @@ export class FarmTasksController implements OnModuleInit {
     };
   }
 
-  @Get(':id')  async getTask(
+  @Get(':id') async getTask(
     @Param('farmId') farmId: string,
     @Param('id') id: string,
     @Req() req: AuthenticatedRequest,
@@ -288,7 +288,7 @@ export class FarmTasksController implements OnModuleInit {
           farm_id: farmId,
           worker_ids: body.workerIds || body.worker_ids,
           group_ids: body.groupIds || body.group_ids,
-        } as any,
+        },
         metadata,
       ),
     );

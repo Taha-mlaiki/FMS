@@ -2,7 +2,6 @@ import {
   Entity,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
   ManyToOne,
   PrimaryColumn,
   JoinColumn,
@@ -27,8 +26,6 @@ export class UserFarm {
   @ManyToOne(() => User, (user) => user.memberships, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
-
-
 
   @Column({
     type: 'enum',
