@@ -895,8 +895,11 @@
         "editTitle": "Edit Metric Type",
         "description": "Enter metric type details.",
         "nameLabel": "Name",
+        "name": "Name",
         "unitLabel": "Unit",
-        "dataTypeLabel": "Data Type"
+        "unit": "Unit",
+        "dataTypeLabel": "Data Type",
+        "dataType": "Data Type"
       },
       "validation": {
         "nameUnitRequired": "Please enter the metric name and unit"
@@ -974,115 +977,6 @@
       "passwordError": "Failed to update password"
     }
   },
-  "landing": {
-    "title": "SmartKouri | Modern Farm Management",
-    "logo": "SmartKouri",
-    "loginButton": "Login",
-    "registerButton": "Register",
-    "nav": {
-      "dashboard": "Dashboard",
-      "tasks": "Tasks",
-      "animals": "Animals",
-      "stock": "Stock",
-      "analytics": "Analytics"
-    },
-    "hero": {
-      "title": "Manage Your Farm. Anywhere. Anytime.",
-      "highlight": "Anywhere. Anytime.",
-      "subtitle": "Track production, manage tasks, control your farm — all in one simple dashboard designed for real life. Now 100% free.",
-      "ctaPrimary": "Get Started Now",
-      "ctaSecondary": "Explore Features",
-      "accent": {
-        "label": "Daily Output",
-        "value": "1,240 Eggs"
-      }
-    },
-    "visibility": {
-      "tag": "Total Control",
-      "title": "See Everything in One Place",
-      "description": "No more notebooks or messy spreadsheets. Get a bird's eye view of your entire operation with real-time data tracking that actually makes sense with SmartKouri.",
-      "features": [
-        "Instant production updates",
-        "Health monitoring alerts"
-      ],
-      "check": "check",
-      "overview": {
-        "title": "Production Overview",
-        "subtitle": "Real-time stats across all units",
-        "live": "Live Now",
-        "items": {
-          "eggs": "Eggs Collected",
-          "mortality": "Mortality Rate",
-          "feed": "Feed Usage"
-        },
-        "trend": "Weekly production is up 12% compared to last month."
-      }
-    },
-    "tasks": {
-      "tag": "Operation Flow",
-      "title": "Never Miss a Task",
-      "description": "Assign duties to your team and watch progress in real-time. Simple, clear instructions delivered straight to their mobile devices via the SmartKouri app.",
-      "items": {
-        "water": {
-          "title": "Clean Water Systems",
-          "subtitle": "Main Unit • Due in 2h"
-        },
-        "feed": {
-          "title": "Morning Feed Check",
-          "subtitle": "Completed by John • 8:45 AM"
-        }
-      },
-      "notification": {
-        "title": "New Task Assigned",
-        "content": "Check temperature in Brooder Unit 2. Alert if above 32°C."
-      }
-    },
-    "stock": {
-      "tag": "Zero Downtime",
-      "title": "Smart Stock Management",
-      "description": "Never run out of essential supplies. SmartKouri tracks your usage patterns and predicts when you'll need a refill, sending alerts before it's too late.",
-      "inventory": {
-        "title": "Inventory Manager",
-        "alert": "Low Stock Alert",
-        "items": {
-          "feed": "Layer Feed (Premium)",
-          "feedStock": "1.2 Tons left",
-          "refill": "Refill recommended within 24 hours.",
-          "crumble": "Organic Starter Crumble",
-          "crumbleStock": "8.5 Tons left",
-          "vaccine": "Vaccination Kit B",
-          "vaccineStock": "42 units left"
-        },
-        "orderBtn": "Place Order via Supplier"
-      },
-      "features": {
-        "patterns": {
-          "title": "Usage Patterns",
-          "description": "Visualise daily consumption trends."
-        },
-        "reorder": {
-          "title": "Auto-Reorder",
-          "description": "Pre-fill supplier orders in one click."
-        }
-      }
-    },
-    "cta": {
-      "title": "Transform your farm into a smart, connected system.",
-      "subtitle": "Join 500+ modern farm owners who have reclaimed their time and boosted production with SmartKouri.",
-      "footer": "Always free for small farms • Integrated cloud storage • Mobile ready"
-    },
-    "footer": {
-      "description": "The world's most intuitive management software for modern livestock farmers. Built for growth, powered by data.",
-      "product": "Product",
-      "company": "Company",
-      "subscribe": "Subscribe",
-      "subscribeDesc": "Get the latest farming tips and updates.",
-      "copyright": "© 2024 SmartKouri Management System. All rights reserved.",
-      "privacy": "Privacy Policy",
-      "terms": "Terms of Service"
-    }
-  },
-
   "invite": {
     "timeUndefined": "Time undefined",
     "expired": "Expired",
@@ -1259,6 +1153,101 @@
     "needsAttention": "Needs attention: {count}",
     "criticalItems": "Critical: {count}",
     "waitingForOwner": "Waiting for the farm owner to add stock materials."
+  },
+  "landing": {
+    "nav": {
+      "features": "Features",
+      "tasks": "Tasks",
+      "stock": "Stock",
+      "about": "About",
+      "login": "Login",
+      "getStarted": "Get Started"
+    },
+    "hero": {
+      "badge": "Smart Farm Management",
+      "title1": "Manage Your",
+      "titleHighlight": "Farm",
+      "title2": "With Intelligence",
+      "description": "SmartKouri brings clarity to your farm operations. Track tasks, monitor stock, manage workers, and generate reports — all from one unified platform.",
+      "cta": "Start Free Trial",
+      "secondaryCta": "Watch Demo",
+      "stat1Label": "Active Farms",
+      "stat1Value": "500+",
+      "stat2Label": "Tasks Completed",
+      "stat2Value": "50K+",
+      "stat3Label": "Uptime",
+      "stat3Value": "99.9%"
+    },
+    "features": {
+      "badge": "Why SmartKouri",
+      "title": "Everything You Need to Run a Modern Farm",
+      "description": "From daily task management to real-time stock tracking, SmartKouri provides the tools that keep your farm operations running smoothly.",
+      "feature1Title": "Real-Time Visibility",
+      "feature1Desc": "Get a bird's-eye view of your entire farm operation. Monitor task progress, worker activity, and stock levels in real-time from any device.",
+      "feature2Title": "Smart Scheduling",
+      "feature2Desc": "Automate recurring tasks and assign work intelligently. Our system ensures the right tasks reach the right workers at the right time.",
+      "feature3Title": "Analytics & Reports",
+      "feature3Desc": "Transform your farm data into actionable insights. Generate detailed reports on production, stock consumption, and worker performance.",
+      "feature4Title": "Stock Monitoring",
+      "feature4Desc": "Track feed, medicine, and equipment levels with automatic low-stock alerts. Never run out of critical supplies again.",
+      "feature5Title": "Team Collaboration",
+      "feature5Desc": "Connect farm owners and workers on a shared platform. Assign groups, track progress, and communicate efficiently.",
+      "feature6Title": "Mobile Optimized",
+      "feature6Desc": "Access your farm dashboard from anywhere. Our responsive design works perfectly on phones, tablets, and desktops."
+    },
+    "tasks": {
+      "badge": "Task Management",
+      "title": "Organize Tasks Like Never Before",
+      "description": "Create, assign, and track tasks across your entire farm. From daily feeding schedules to equipment maintenance — nothing falls through the cracks.",
+      "point1": "Drag-and-drop task boards with status tracking",
+      "point2": "Automatic notifications and deadline reminders",
+      "point3": "Worker assignment with role-based access",
+      "point4": "Detailed task history and completion analytics"
+    },
+    "stock": {
+      "badge": "Stock Control",
+      "title": "Never Run Out of Supplies",
+      "description": "Monitor every material in your farm inventory. Get instant alerts when stock runs low, track consumption patterns, and plan purchases with confidence.",
+      "point1": "Real-time inventory levels across all categories",
+      "point2": "Automatic low-stock and critical-level alerts",
+      "point3": "Consumption trend analytics and forecasting",
+      "point4": "Easy material addition and stock updates"
+    },
+    "stats": {
+      "title": "Trusted by Farms Everywhere",
+      "stat1Value": "500",
+      "stat1Label": "Active Farms",
+      "stat1Suffix": "+",
+      "stat2Value": "50000",
+      "stat2Label": "Tasks Completed",
+      "stat2Suffix": "+",
+      "stat3Value": "99.9",
+      "stat3Label": "Uptime",
+      "stat3Suffix": "%",
+      "stat4Value": "24",
+      "stat4Label": "Support",
+      "stat4Suffix": "/7"
+    },
+    "cta": {
+      "title": "Ready to Transform Your Farm?",
+      "description": "Join hundreds of farm owners who have already modernized their operations with SmartKouri. Start your free trial today — no credit card required.",
+      "button": "Get Started Free",
+      "secondaryButton": "Contact Sales"
+    },
+    "footer": {
+      "description": "Smart farm management for the modern age. Track, manage, and optimize your farm operations with ease.",
+      "product": "Product",
+      "company": "Company",
+      "legal": "Legal",
+      "aboutUs": "About Us",
+      "careers": "Careers",
+      "contact": "Contact",
+      "blog": "Blog",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy",
+      "copyright": "© 2026 SmartKouri. All rights reserved."
+    }
   },
   "metadata": {
     "title": "FMS — Farm Management System",
