@@ -10,4 +10,4 @@ import { Farm } from './entities/farm.entity';
   providers: [FarmsService],
   exports: [FarmsService],
 })
-export class FarmsModule { }
+export class FarmsModule {}
