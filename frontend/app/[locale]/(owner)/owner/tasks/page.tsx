@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, Suspense } from 'react';
+import React, { useMemo, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   AlertCircle,
@@ -1748,7 +1748,7 @@ function TasksPageContent() {
             setIsCreateDialogOpen(true);
           }
         }}
-        template={editingTemplate as any}
+        template={editingTemplate as React.ComponentProps<typeof CreateTaskTemplateDialog>['template']}
       />
     </div>
   );
