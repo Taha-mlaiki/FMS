@@ -8,7 +8,10 @@ export interface AuthUser {
   id: string;
   email: string;
   firstName: string;
+  first_name?: string;
   lastName: string;
+  last_name?: string;
+  full_name?: string;
   phone?: string;
   avatarUrl?: string;
   role: string;
@@ -18,8 +21,10 @@ export interface AuthFarm {
   id: string;
   name: string;
   schemaName: string;
+  schema_name?: string;
   status: string;
   createdAt: string;
+  created_at?: string;
 }
 
 export interface AuthResponse {
@@ -27,11 +32,13 @@ export interface AuthResponse {
   accessToken: string;
   user: AuthUser;
   currentFarm?: AuthFarm;
+  current_farm?: AuthFarm;
 }
 
 export interface RefreshSessionResponse {
   accessToken: string;
   currentFarm?: AuthFarm;
+  current_farm?: AuthFarm;
 }
 
 export interface ProfileResponse extends AuthUser {
@@ -140,12 +147,12 @@ export async function listInvitations(): Promise<UserInvitation[]> {
   return response.data.invitations;
 }
 
-export async function acceptInvitation(token: string): Promise<any> {
+export async function acceptInvitation(token: string): Promise<unknown> {
   const response = await api.post(`/invitations/${token}/accept`);
   return response.data;
 }
 
-export async function rejectInvitation(token: string): Promise<any> {
+export async function rejectInvitation(token: string): Promise<unknown> {
   const response = await api.post(`/invitations/${token}/reject`);
   return response.data;
 }
