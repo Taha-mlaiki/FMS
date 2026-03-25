@@ -283,7 +283,7 @@ export default function SettingsPage() {
     try {
       await updateTemplateStatus.mutateAsync({
         id: template.id,
-        is_active: !isTemplateActive(template),
+        isActive: !isTemplateActive(template),
       });
       toast.success(t('templates.statusUpdateSuccess'));
     } catch (error) {
